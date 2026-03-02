@@ -353,7 +353,7 @@ export default function PlansPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-foreground">Nidan AI</span>
+                <span className="text-xl font-bold text-foreground">Vaidya</span>
               </div>
             </div>
             <Button asChild>
@@ -492,11 +492,10 @@ export default function PlansPage() {
                                   className="p-1 h-6 w-6"
                                 >
                                   <CheckCircle
-                                    className={`w-4 h-4 ${
-                                      completedExercises.has(exercise.id)
+                                    className={`w-4 h-4 ${completedExercises.has(exercise.id)
                                         ? "text-accent fill-accent"
                                         : "text-muted-foreground"
-                                    }`}
+                                      }`}
                                   />
                                 </Button>
                                 <span className="font-medium">{exercise.name}</span>

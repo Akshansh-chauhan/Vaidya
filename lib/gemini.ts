@@ -1,9 +1,13 @@
 // Ensure global-fetch is available
 const fetch = global.fetch // Use global fetch available in Next.js
 
-const GEMINI_API_KEY = "AIzaSyCtdtZeXamaI15dMGjZ7k5_NSIUcDlwdP0"
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || ""
 const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent"
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview:generateContent"
+
+if (!GEMINI_API_KEY) {
+  console.warn("[Vaidya] WARNING: GEMINI_API_KEY environment variable is not set!")
+}
 
 // Enhanced sanitization function with comprehensive security measures
 export function sanitizeGeminiOutput(text: string): string {
@@ -205,9 +209,9 @@ ${languageInstruction}
 
 Previous conversation (last 3 messages):
 ${chatHistory
-  .slice(-3)
-  .map((msg) => `${msg.sender}: ${msg.content}`)
-  .join("\n")}
+            .slice(-3)
+            .map((msg) => `${msg.sender}: ${msg.content}`)
+            .join("\n")}
 
 User: ${message}
 

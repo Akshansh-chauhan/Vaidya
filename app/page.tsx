@@ -15,8 +15,8 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Activity className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">Nidan AI</span>
-              
+              <span className="text-xl font-bold text-foreground">Vaidya</span>
+
             </div>
             <div className="hidden md:flex items-center space-x-6">
               <Link href="/scan" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -37,7 +37,7 @@ export default function HomePage() {
       <section className="relative py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <div className="mb-8">
-            
+
             <h1 className="text-4xl md:text-6xl font-bold text-balance mb-6">
               Your AI Health <span className="text-primary">Companion</span>
             </h1>
@@ -203,7 +203,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-balance mb-4">Ready to Start Your Health Journey?</h2>
           <p className="text-xl text-muted-foreground text-balance mb-8">
-            Join thousands of users who trust Nidan AI for their health monitoring needs
+            Join thousands of users who trust Vaidya for their health monitoring needs
           </p>
           <Button asChild size="lg" className="text-lg px-8 py-6">
             <Link href="/scan">
@@ -221,10 +221,10 @@ export default function HomePage() {
             <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
               <Activity className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-semibold">Nidan AI</span>
+            <span className="text-lg font-semibold">Vaidya</span>
           </div>
-          <p className="text-muted-foreground mb-2">Built by Team Elite Coders for CodeVeda Hackathon</p>
-          <p className="text-sm text-muted-foreground">Empowering healthcare through artificial intelligence</p>
+          <p className="text-muted-foreground mb-2">Empowering healthcare through artificial intelligence</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Vaidya. All rights reserved.</p>
         </div>
       </footer>
     </div>

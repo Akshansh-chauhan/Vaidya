@@ -76,7 +76,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
   }, [messages])
 
   useEffect(() => {
-    const savedMessages = localStorage.getItem(`nidan-chat-${scanType}`)
+    const savedMessages = localStorage.getItem(`vaidya-chat-${scanType}`)
     if (savedMessages) {
       try {
         const parsed = JSON.parse(savedMessages)
@@ -94,7 +94,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
 
   useEffect(() => {
     if (messages.length > 1) {
-      localStorage.setItem(`nidan-chat-${scanType}`, JSON.stringify(messages))
+      localStorage.setItem(`vaidya-chat-${scanType}`, JSON.stringify(messages))
     }
   }, [messages, scanType])
 
@@ -374,9 +374,8 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex items-start space-x-3 ${
-                    message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
-                  }`}
+                  className={`flex items-start space-x-3 ${message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                    }`}
                 >
                   <Avatar className="w-8 h-8">
                     <AvatarFallback
@@ -388,9 +387,8 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
 
                   <div className={`flex-1 max-w-[80%] ${message.sender === "user" ? "text-right" : ""}`}>
                     <div
-                      className={`rounded-lg px-4 py-2 ${
-                        message.sender === "user" ? "bg-primary text-primary-foreground ml-auto" : "bg-muted"
-                      }`}
+                      className={`rounded-lg px-4 py-2 ${message.sender === "user" ? "bg-primary text-primary-foreground ml-auto" : "bg-muted"
+                        }`}
                     >
                       <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     </div>
@@ -475,7 +473,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={isSpeaking ? stopSpeaking : () => {}}
+                  onClick={isSpeaking ? stopSpeaking : () => { }}
                   disabled={!isSpeaking}
                 >
                   {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}

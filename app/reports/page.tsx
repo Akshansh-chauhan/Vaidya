@@ -176,18 +176,18 @@ export default function ReportsPage() {
     const element = document.createElement("a")
     const file = new Blob(
       [
-        `Nidan AI Health Report - ${categoryLabels[report.category]}\n\n` +
-          `Date: ${new Date(report.date).toLocaleDateString()}\n` +
-          `Condition: ${report.condition}\n` +
-          `Confidence: ${report.confidence}\n` +
-          `Severity: ${report.severity.toUpperCase()}\n\n` +
-          `Description:\n${report.description}\n\n` +
-          `Recommendations:\n${report.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join("\n")}`,
+        `Vaidya Health Report - ${categoryLabels[report.category]}\n\n` +
+        `Date: ${new Date(report.date).toLocaleDateString()}\n` +
+        `Condition: ${report.condition}\n` +
+        `Confidence: ${report.confidence}\n` +
+        `Severity: ${report.severity.toUpperCase()}\n\n` +
+        `Description:\n${report.description}\n\n` +
+        `Recommendations:\n${report.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join("\n")}`,
       ],
       { type: "text/plain" },
     )
     element.href = URL.createObjectURL(file)
-    element.download = `nidan-ai-report-${report.id}.txt`
+    element.download = `vaidya-report-${report.id}.txt`
     document.body.appendChild(element)
     element.click()
     document.body.removeChild(element)
@@ -236,7 +236,7 @@ export default function ReportsPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-foreground">Nidan AI</span>
+                <span className="text-xl font-bold text-foreground">Vaidya</span>
               </div>
             </div>
             <Button asChild>

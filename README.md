@@ -1,30 +1,57 @@
-# AI Health Assistant
+# Vaidya — AI Health Companion
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+An AI-powered health assistant providing comprehensive analysis for posture, skin conditions, eye health, and mental wellness. Built with **Next.js 14**, **Tailwind CSS v4**, **Radix UI**, and **Google Gemini AI**.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/koorefer106-9466s-projects/v0-ai-health-assistant)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/nvCbD2JCE87)
+## Features
 
-## Overview
+- **Spine & Posture Analysis** — Upload photos/videos for AI-powered posture assessment
+- **Dermatology Scan** — Skin condition analysis with image recognition
+- **Ophthalmology Check** — Eye health assessment and vision screening
+- **Mental Health Screening** — Voice and text-based mental wellness evaluation
+- **Multi-language Support** — 10 languages (EN, ES, FR, DE, HI, ZH, JA, AR, IT, PT)
+- **Voice I/O** — Speech-to-text input and text-to-speech responses
+- **Health Reports** — Downloadable reports with recommendations
+- **Exercise Plans** — Personalised health improvement programs
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+## Getting Started
 
-## Deployment
+### Prerequisites
+- Node.js 18+ (install via [nvm](https://github.com/nvm-sh/nvm))
+- pnpm (`npm install -g pnpm`)
 
-Your project is live at:
+### Setup
 
-**[https://vercel.com/koorefer106-9466s-projects/v0-ai-health-assistant](https://vercel.com/koorefer106-9466s-projects/v0-ai-health-assistant)**
+```bash
+# Install dependencies
+pnpm install
 
-## Build your app
+# Copy environment template and add your API key
+cp .env.example .env.local
+# Edit .env.local and set GEMINI_API_KEY
 
-Continue building your app on:
+# Start development server
+pnpm dev
+```
 
-**[https://v0.app/chat/projects/nvCbD2JCE87](https://v0.app/chat/projects/nvCbD2JCE87)**
+Open [http://localhost:3000](http://localhost:3000).
 
-## How It Works
+### Environment Variables
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+| Variable | Required | Description |
+|---|---|---|
+| `GEMINI_API_KEY` | ✅ | Google Gemini API key from [AI Studio](https://aistudio.google.com) |
+
+### Deployment
+
+This app is deployed on **Vercel**. Push to `main` to auto-deploy.
+
+Set `GEMINI_API_KEY` in **Vercel → Project → Settings → Environment Variables**.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS v4 + Radix UI (shadcn/ui)
+- **AI**: Google Gemini API (`gemini-2.5-flash-preview`)
+- **Language**: TypeScript
+- **Storage**: JSONBlob (health records)
+- **Hosting**: Vercel

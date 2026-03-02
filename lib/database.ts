@@ -1,5 +1,5 @@
 const JSONBLOB_BASE_URL = "https://jsonblob.com/api"
-const BLOB_ID = "1413824672096772096"
+const BLOB_ID = "019caec1-7ca7-7b2c-bf5c-94dc800481de"
 
 export interface HealthRecord {
   id: string
@@ -83,7 +83,7 @@ export async function saveHealthRecord(record: HealthRecord): Promise<boolean> {
     const avgScore =
       categoryRecords.length > 0
         ? categoryRecords.reduce((sum, r) => sum + Number.parseFloat(r.analysis.confidence.replace("%", "")), 0) /
-          categoryRecords.length
+        categoryRecords.length
         : 0
 
     currentData.summary.categoryScores[record.category] = avgScore

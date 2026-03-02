@@ -21,7 +21,7 @@ export default function PostureScanPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-foreground">Nidan AI</span>
+                <span className="text-xl font-bold text-foreground">Vaidya</span>
               </div>
             </div>
           </div>
