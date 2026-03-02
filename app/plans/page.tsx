@@ -9,6 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { Activity, Eye, Scan, Brain, ArrowLeft, Clock, Target, CheckCircle, RotateCcw } from "lucide-react"
+import { useLanguage } from "@/lib/use-language"
+import { getSubPageTranslations } from "@/lib/sub-translations"
+import { getPlansTranslations } from "@/lib/mock-data-translations"
 
 interface Exercise {
   id: string
@@ -30,286 +33,21 @@ interface HealthPlan {
   goals: string[]
 }
 
-const healthPlans: HealthPlan[] = [
-  {
-    category: "posture",
-    title: "Posture Correction Program",
-    description: "Comprehensive exercises and habits to improve spinal alignment and reduce postural strain",
-    icon: Activity,
-    exercises: [
-      {
-        id: "p1",
-        name: "Chin Tuck Exercise",
-        duration: "2-3 minutes",
-        difficulty: "beginner",
-        frequency: "3 times daily",
-        instructions: [
-          "Sit or stand with your back straight",
-          "Look straight ahead, keeping your shoulders relaxed",
-          "Slowly pull your chin back, creating a double chin",
-          "Hold for 5 seconds, then relax",
-          "Repeat 10-15 times",
-        ],
-        benefits: ["Strengthens deep neck flexors", "Reduces forward head posture", "Alleviates neck tension"],
-      },
-      {
-        id: "p2",
-        name: "Wall Angels",
-        duration: "5 minutes",
-        difficulty: "beginner",
-        frequency: "2 times daily",
-        instructions: [
-          "Stand with your back against a wall",
-          "Place your arms against the wall in a 'W' position",
-          "Slowly slide your arms up and down the wall",
-          "Keep your back and arms in contact with the wall",
-          "Perform 15-20 repetitions",
-        ],
-        benefits: ["Improves shoulder mobility", "Strengthens upper back muscles", "Corrects rounded shoulders"],
-      },
-      {
-        id: "p3",
-        name: "Cat-Cow Stretch",
-        duration: "3-4 minutes",
-        difficulty: "beginner",
-        frequency: "Morning and evening",
-        instructions: [
-          "Start on hands and knees in tabletop position",
-          "Arch your back and look up (Cow pose)",
-          "Round your spine and tuck your chin (Cat pose)",
-          "Move slowly between positions",
-          "Repeat 10-15 times",
-        ],
-        benefits: ["Increases spinal flexibility", "Relieves back tension", "Improves posture awareness"],
-      },
-    ],
-    tips: [
-      "Set up an ergonomic workstation with monitor at eye level",
-      "Take breaks every 30 minutes to stand and stretch",
-      "Use a lumbar support cushion when sitting",
-      "Sleep with a supportive pillow that maintains neck alignment",
-      "Practice mindful posture checks throughout the day",
-    ],
-    goals: [
-      "Reduce forward head posture by 50% in 4 weeks",
-      "Eliminate daily neck and shoulder pain",
-      "Improve spinal alignment and core strength",
-      "Develop sustainable postural habits",
-    ],
-  },
-  {
-    category: "skin",
-    title: "Dermatology Care Plan",
-    description: "Evidence-based skincare routines and protective measures for optimal skin health",
-    icon: Scan,
-    exercises: [
-      {
-        id: "s1",
-        name: "Daily Skincare Routine",
-        duration: "10-15 minutes",
-        difficulty: "beginner",
-        frequency: "Twice daily",
-        instructions: [
-          "Cleanse with gentle, pH-balanced cleanser",
-          "Apply vitamin C serum in the morning",
-          "Use retinol or retinoid in the evening (start 2x/week)",
-          "Apply broad-spectrum SPF 30+ sunscreen daily",
-          "Moisturize with ceramide-containing products",
-        ],
-        benefits: ["Prevents premature aging", "Protects against UV damage", "Maintains skin barrier function"],
-      },
-      {
-        id: "s2",
-        name: "Weekly Exfoliation",
-        duration: "5 minutes",
-        difficulty: "intermediate",
-        frequency: "1-2 times weekly",
-        instructions: [
-          "Use chemical exfoliant (AHA/BHA) in the evening",
-          "Start with lower concentrations (5-10%)",
-          "Apply to clean, dry skin",
-          "Follow with moisturizer",
-          "Always use sunscreen the next day",
-        ],
-        benefits: ["Removes dead skin cells", "Improves skin texture", "Enhances product absorption"],
-      },
-      {
-        id: "s3",
-        name: "Monthly Skin Assessment",
-        duration: "15 minutes",
-        difficulty: "beginner",
-        frequency: "Monthly",
-        instructions: [
-          "Examine skin in good lighting using a mirror",
-          "Check for new moles or changes in existing ones",
-          "Look for asymmetry, irregular borders, color changes",
-          "Document any concerns with photos",
-          "Schedule dermatologist visit if needed",
-        ],
-        benefits: ["Early detection of skin changes", "Monitors treatment progress", "Maintains skin health awareness"],
-      },
-    ],
-    tips: [
-      "Wear protective clothing and wide-brimmed hats outdoors",
-      "Avoid peak sun hours (10 AM - 4 PM) when possible",
-      "Stay hydrated with 8+ glasses of water daily",
-      "Eat antioxidant-rich foods (berries, leafy greens)",
-      "Get adequate sleep (7-9 hours) for skin repair",
-    ],
-    goals: [
-      "Establish consistent daily skincare routine",
-      "Achieve 100% daily sun protection compliance",
-      "Reduce signs of photoaging and improve skin texture",
-      "Maintain regular dermatological monitoring",
-    ],
-  },
-  {
-    category: "eye",
-    title: "Eye Health Optimization",
-    description: "Comprehensive eye care exercises and habits to maintain and improve vision health",
-    icon: Eye,
-    exercises: [
-      {
-        id: "e1",
-        name: "20-20-20 Rule",
-        duration: "20 seconds",
-        difficulty: "beginner",
-        frequency: "Every 20 minutes",
-        instructions: [
-          "Set a timer for every 20 minutes during screen work",
-          "Look at an object 20 feet away",
-          "Focus on the distant object for 20 seconds",
-          "Blink several times to refresh your eyes",
-          "Return to your work with refreshed vision",
-        ],
-        benefits: ["Reduces digital eye strain", "Prevents dry eyes", "Maintains focusing flexibility"],
-      },
-      {
-        id: "e2",
-        name: "Eye Movement Exercises",
-        duration: "5 minutes",
-        difficulty: "beginner",
-        frequency: "2-3 times daily",
-        instructions: [
-          "Sit comfortably and look straight ahead",
-          "Slowly move eyes up and down 10 times",
-          "Move eyes left and right 10 times",
-          "Make clockwise circles 5 times",
-          "Make counter-clockwise circles 5 times",
-        ],
-        benefits: ["Strengthens eye muscles", "Improves eye coordination", "Reduces eye fatigue"],
-      },
-      {
-        id: "e3",
-        name: "Palming Relaxation",
-        duration: "3-5 minutes",
-        difficulty: "beginner",
-        frequency: "As needed for eye strain",
-        instructions: [
-          "Rub your palms together to generate warmth",
-          "Cup your palms over closed eyes without pressure",
-          "Ensure complete darkness under your palms",
-          "Breathe deeply and relax for 3-5 minutes",
-          "Slowly remove hands and open eyes",
-        ],
-        benefits: [
-          "Deeply relaxes eye muscles",
-          "Reduces eye strain and tension",
-          "Improves blood circulation to eyes",
-        ],
-      },
-    ],
-    tips: [
-      "Maintain proper lighting when reading or working",
-      "Position screens 20-26 inches from your eyes",
-      "Use artificial tears if you experience dry eyes",
-      "Eat foods rich in omega-3s, lutein, and zeaxanthin",
-      "Get regular comprehensive eye exams",
-    ],
-    goals: [
-      "Eliminate digital eye strain symptoms",
-      "Maintain optimal tear film and eye moisture",
-      "Preserve and enhance visual acuity",
-      "Prevent age-related eye conditions",
-    ],
-  },
-  {
-    category: "mental",
-    title: "Mental Wellness Program",
-    description: "Evidence-based practices for stress management, emotional regulation, and mental resilience",
-    icon: Brain,
-    exercises: [
-      {
-        id: "m1",
-        name: "Mindfulness Meditation",
-        duration: "10-20 minutes",
-        difficulty: "beginner",
-        frequency: "Daily",
-        instructions: [
-          "Find a quiet, comfortable place to sit",
-          "Close your eyes and focus on your breath",
-          "Notice when your mind wanders and gently return focus to breathing",
-          "Start with 5 minutes and gradually increase duration",
-          "Use guided meditation apps if helpful",
-        ],
-        benefits: ["Reduces stress and anxiety", "Improves emotional regulation", "Enhances focus and concentration"],
-      },
-      {
-        id: "m2",
-        name: "Progressive Muscle Relaxation",
-        duration: "15-20 minutes",
-        difficulty: "beginner",
-        frequency: "3-4 times weekly",
-        instructions: [
-          "Lie down in a comfortable position",
-          "Tense and then relax each muscle group for 5 seconds",
-          "Start with your toes and work up to your head",
-          "Focus on the contrast between tension and relaxation",
-          "End with deep breathing and full-body relaxation",
-        ],
-        benefits: ["Reduces physical tension", "Promotes better sleep", "Increases body awareness"],
-      },
-      {
-        id: "m3",
-        name: "Gratitude Journaling",
-        duration: "5-10 minutes",
-        difficulty: "beginner",
-        frequency: "Daily (evening)",
-        instructions: [
-          "Write down 3 things you're grateful for each day",
-          "Be specific about why you're grateful",
-          "Include both big and small positive experiences",
-          "Reflect on how these things made you feel",
-          "Review past entries weekly to reinforce positive patterns",
-        ],
-        benefits: [
-          "Improves mood and life satisfaction",
-          "Reduces negative thinking patterns",
-          "Enhances overall well-being",
-        ],
-      },
-    ],
-    tips: [
-      "Maintain a consistent sleep schedule (7-9 hours nightly)",
-      "Limit caffeine intake, especially in the afternoon",
-      "Engage in regular physical exercise (30 minutes daily)",
-      "Practice saying 'no' to prevent overcommitment",
-      "Seek professional help when needed - therapy is beneficial",
-    ],
-    goals: [
-      "Develop daily stress management practices",
-      "Improve emotional awareness and regulation",
-      "Build resilience to life's challenges",
-      "Maintain optimal mental health and well-being",
-    ],
-  },
-]
-
 export default function PlansPage() {
+  const [lang] = useLanguage()
+  const t = getSubPageTranslations(lang)
+  const pt = getPlansTranslations(lang)
   const [activeTab, setActiveTab] = useState("posture")
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
   const [timerActive, setTimerActive] = useState<string | null>(null)
   const [timerSeconds, setTimerSeconds] = useState(0)
+
+  const healthPlans: HealthPlan[] = [
+    { category: "posture", title: pt.posture.title, description: pt.posture.description, icon: Activity, exercises: pt.posture.exercises.map((e, i) => ({ id: `p${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "beginner", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.posture.tips, goals: pt.posture.goals },
+    { category: "skin", title: pt.skin.title, description: pt.skin.description, icon: Scan, exercises: pt.skin.exercises.map((e, i) => ({ id: `s${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "intermediate", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.skin.tips, goals: pt.skin.goals },
+    { category: "eye", title: pt.eye.title, description: pt.eye.description, icon: Eye, exercises: pt.eye.exercises.map((e, i) => ({ id: `e${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "beginner", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.eye.tips, goals: pt.eye.goals },
+    { category: "mental", title: pt.mental.title, description: pt.mental.description, icon: Brain, exercises: pt.mental.exercises.map((e, i) => ({ id: `m${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "beginner", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.mental.tips, goals: pt.mental.goals },
+  ]
 
   const toggleExerciseComplete = (exerciseId: string) => {
     const newCompleted = new Set(completedExercises)
@@ -346,18 +84,18 @@ export default function PlansPage() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Home
+                  {t.common.backHome}
                 </Link>
               </Button>
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-foreground">Vaidya</span>
+                <span className="text-xl font-bold text-foreground">AI Vaidya</span>
               </div>
             </div>
             <Button asChild>
-              <Link href="/scan">New Scan</Link>
+              <Link href="/scan">{t.common.newScan}</Link>
             </Button>
           </div>
         </div>
@@ -366,11 +104,8 @@ export default function PlansPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">Health Improvement Plans</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Personalized exercise routines and lifestyle recommendations to address your health concerns and optimize
-            your well-being
-          </p>
+          <h1 className="text-3xl font-bold mb-4">{t.plans.heading}</h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.plans.subtitle}</p>
         </div>
 
         {/* Progress Overview */}
@@ -378,7 +113,7 @@ export default function PlansPage() {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Target className="w-5 h-5" />
-              <span>Your Progress</span>
+              <span>{t.plans.progress}</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -396,7 +131,7 @@ export default function PlansPage() {
                     <h3 className="font-semibold mb-1">{plan.title.split(" ")[0]}</h3>
                     <Progress value={percentage} className="h-2 mb-1" />
                     <p className="text-sm text-muted-foreground">
-                      {completed}/{total} exercises
+                      {completed}/{total} {t.plans.exercises}
                     </p>
                   </div>
                 )
@@ -437,7 +172,7 @@ export default function PlansPage() {
                     <div>
                       <h3 className="font-semibold mb-3 flex items-center">
                         <Target className="w-4 h-4 mr-2" />
-                        Program Goals
+                        {t.plans.goals}
                       </h3>
                       <ul className="space-y-2">
                         {plan.goals.map((goal, index) => (
@@ -453,7 +188,7 @@ export default function PlansPage() {
                     <div>
                       <h3 className="font-semibold mb-3 flex items-center">
                         <Activity className="w-4 h-4 mr-2" />
-                        Lifestyle Tips
+                        {t.plans.tips}
                       </h3>
                       <ul className="space-y-2">
                         {plan.tips.slice(0, 4).map((tip, index) => (
@@ -471,8 +206,8 @@ export default function PlansPage() {
               {/* Exercises */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Exercise Program</CardTitle>
-                  <CardDescription>Follow these exercises regularly for optimal results</CardDescription>
+                  <CardTitle>{t.plans.exerciseProgram}</CardTitle>
+                  <CardDescription>{t.plans.exerciseDesc}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Accordion type="single" collapsible className="space-y-4">
@@ -493,8 +228,8 @@ export default function PlansPage() {
                                 >
                                   <CheckCircle
                                     className={`w-4 h-4 ${completedExercises.has(exercise.id)
-                                        ? "text-accent fill-accent"
-                                        : "text-muted-foreground"
+                                      ? "text-accent fill-accent"
+                                      : "text-muted-foreground"
                                       }`}
                                   />
                                 </Button>
@@ -503,7 +238,7 @@ export default function PlansPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               <Badge variant={getDifficultyColor(exercise.difficulty) as any} className="text-xs">
-                                {exercise.difficulty}
+                                {t.plans[exercise.difficulty as "beginner" | "intermediate" | "advanced"]}
                               </Badge>
                               <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                                 <Clock className="w-3 h-3" />
@@ -515,7 +250,7 @@ export default function PlansPage() {
                         <AccordionContent className="pt-4">
                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <div>
-                              <h4 className="font-semibold mb-2">Instructions</h4>
+                              <h4 className="font-semibold mb-2">{t.plans.instructions}</h4>
                               <ol className="space-y-2">
                                 {exercise.instructions.map((instruction, idx) => (
                                   <li key={idx} className="flex items-start space-x-2 text-sm">
@@ -528,13 +263,13 @@ export default function PlansPage() {
                               </ol>
 
                               <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                                <p className="text-sm font-medium mb-1">Frequency</p>
+                                <p className="text-sm font-medium mb-1">{t.plans.frequency}</p>
                                 <p className="text-sm text-muted-foreground">{exercise.frequency}</p>
                               </div>
                             </div>
 
                             <div>
-                              <h4 className="font-semibold mb-2">Benefits</h4>
+                              <h4 className="font-semibold mb-2">{t.plans.benefits}</h4>
                               <ul className="space-y-2 mb-4">
                                 {exercise.benefits.map((benefit, idx) => (
                                   <li key={idx} className="flex items-start space-x-2 text-sm">
@@ -554,12 +289,12 @@ export default function PlansPage() {
                                   {completedExercises.has(exercise.id) ? (
                                     <>
                                       <RotateCcw className="w-3 h-3 mr-1" />
-                                      Mark Incomplete
+                                      {t.plans.markIncomplete}
                                     </>
                                   ) : (
                                     <>
                                       <CheckCircle className="w-3 h-3 mr-1" />
-                                      Mark Complete
+                                      {t.plans.markComplete}
                                     </>
                                   )}
                                 </Button>

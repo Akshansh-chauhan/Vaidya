@@ -29,6 +29,9 @@ import {
   AlertCircle,
   Clock,
 } from "lucide-react"
+import { useLanguage } from "@/lib/use-language"
+import { getSubPageTranslations } from "@/lib/sub-translations"
+import { getReportsTranslations } from "@/lib/mock-data-translations"
 
 interface HealthReport {
   id: string
@@ -149,14 +152,13 @@ const categoryIcons = {
   mental: Brain,
 }
 
-const categoryLabels = {
-  posture: "Posture Analysis",
-  skin: "Dermatology Scan",
-  eye: "Eye Health Check",
-  mental: "Mental Health Screening",
-}
+// categoryLabels and severityLabels are now from translations
 
 export default function ReportsPage() {
+  const [lang] = useLanguage()
+  const t = getSubPageTranslations(lang)
+  const rt = getReportsTranslations(lang)
+  const categoryLabels = rt.categoryLabels
   const [searchTerm, setSearchTerm] = useState("")
   const [filterCategory, setFilterCategory] = useState<string>("all")
   const [filterSeverity, setFilterSeverity] = useState<string>("all")
@@ -176,7 +178,7 @@ export default function ReportsPage() {
     const element = document.createElement("a")
     const file = new Blob(
       [
-        `Vaidya Health Report - ${categoryLabels[report.category]}\n\n` +
+        `AI Vaidya Health Report - ${categoryLabels[report.category]}\n\n` +
         `Date: ${new Date(report.date).toLocaleDateString()}\n` +
         `Condition: ${report.condition}\n` +
         `Confidence: ${report.confidence}\n` +
@@ -229,18 +231,18 @@ export default function ReportsPage() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Home
+                  {t.common.backHome}
                 </Link>
               </Button>
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-foreground">Vaidya</span>
+                <span className="text-xl font-bold text-foreground">AI Vaidya</span>
               </div>
             </div>
             <Button asChild>
-              <Link href="/scan">New Scan</Link>
+              <Link href="/scan">{t.common.newScan}</Link>
             </Button>
           </div>
         </div>
@@ -249,8 +251,8 @@ export default function ReportsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Health Reports</h1>
-          <p className="text-muted-foreground text-lg">View and manage your health scan history and analysis results</p>
+          <h1 className="text-3xl font-bold mb-2">{t.reports.heading}</h1>
+          <p className="text-muted-foreground text-lg">{t.reports.subtitle}</p>
         </div>
 
         {/* Stats Cards */}
@@ -259,7 +261,7 @@ export default function ReportsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Scans</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t.reports.totalScans}</p>
                   <p className="text-2xl font-bold">{mockReports.length}</p>
                 </div>
                 <Activity className="w-8 h-8 text-primary" />
@@ -271,7 +273,7 @@ export default function ReportsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">High Priority</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t.reports.highPriority}</p>
                   <p className="text-2xl font-bold text-destructive">
                     {mockReports.filter((r) => r.severity === "high").length}
                   </p>
@@ -285,7 +287,7 @@ export default function ReportsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Medium Priority</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t.reports.mediumPriority}</p>
                   <p className="text-2xl font-bold text-primary">
                     {mockReports.filter((r) => r.severity === "medium").length}
                   </p>
@@ -299,7 +301,7 @@ export default function ReportsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Low Priority</p>
+                  <p className="text-sm font-medium text-muted-foreground">{t.reports.lowPriority}</p>
                   <p className="text-2xl font-bold text-accent">
                     {mockReports.filter((r) => r.severity === "low").length}
                   </p>
@@ -318,7 +320,7 @@ export default function ReportsPage() {
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                   <Input
-                    placeholder="Search reports by condition or summary..."
+                    placeholder={t.reports.search}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10"
@@ -331,11 +333,11 @@ export default function ReportsPage() {
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="posture">Posture Analysis</SelectItem>
-                  <SelectItem value="skin">Dermatology</SelectItem>
-                  <SelectItem value="eye">Eye Health</SelectItem>
-                  <SelectItem value="mental">Mental Health</SelectItem>
+                  <SelectItem value="all">{t.reports.allCategories}</SelectItem>
+                  <SelectItem value="posture">{t.reports.posture}</SelectItem>
+                  <SelectItem value="skin">{t.reports.dermatology}</SelectItem>
+                  <SelectItem value="eye">{t.reports.eyeHealth}</SelectItem>
+                  <SelectItem value="mental">{t.reports.mentalHealth}</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -344,10 +346,10 @@ export default function ReportsPage() {
                   <SelectValue placeholder="Filter by severity" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Severities</SelectItem>
-                  <SelectItem value="high">High Priority</SelectItem>
-                  <SelectItem value="medium">Medium Priority</SelectItem>
-                  <SelectItem value="low">Low Priority</SelectItem>
+                  <SelectItem value="all">{t.reports.allSeverities}</SelectItem>
+                  <SelectItem value="high">{t.reports.highPriority}</SelectItem>
+                  <SelectItem value="medium">{t.reports.mediumPriority}</SelectItem>
+                  <SelectItem value="low">{t.reports.lowPriority}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -374,11 +376,11 @@ export default function ReportsPage() {
                     </div>
                     <Badge variant={getSeverityColor(report.severity) as any} className="text-xs">
                       <SeverityIcon className="w-3 h-3 mr-1" />
-                      {report.severity.toUpperCase()}
+                      {rt.severityLabels[report.severity]}
                     </Badge>
                   </div>
 
-                  <CardTitle className="text-lg line-clamp-2">{report.condition}</CardTitle>
+                  <CardTitle className="text-lg line-clamp-2">{(rt.reports[report.id] || report).condition}</CardTitle>
                   <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center space-x-1">
                       <Calendar className="w-3 h-3" />
@@ -392,7 +394,7 @@ export default function ReportsPage() {
                 </CardHeader>
 
                 <CardContent className="pt-0">
-                  <CardDescription className="line-clamp-3 mb-4">{report.summary}</CardDescription>
+                  <CardDescription className="line-clamp-3 mb-4">{(rt.reports[report.id] || report).summary}</CardDescription>
 
                   <div className="flex space-x-2">
                     <Dialog>
@@ -404,14 +406,14 @@ export default function ReportsPage() {
                           onClick={() => setSelectedReport(report)}
                         >
                           <ExternalLink className="w-3 h-3 mr-1" />
-                          View Details
+                          {t.reports.viewDetails}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="flex items-center space-x-2">
                             <Icon className="w-5 h-5 text-primary" />
-                            <span>{report.condition}</span>
+                            <span>{(rt.reports[report.id] || report).condition}</span>
                           </DialogTitle>
                           <DialogDescription>
                             {categoryLabels[report.category]} • {new Date(report.date).toLocaleDateString()}
@@ -422,20 +424,20 @@ export default function ReportsPage() {
                           <div className="flex items-center justify-between">
                             <Badge variant={getSeverityColor(report.severity) as any}>
                               <SeverityIcon className="w-3 h-3 mr-1" />
-                              {report.severity.toUpperCase()} PRIORITY
+                              {rt.severityLabels[report.severity]} {t.reports.priority}
                             </Badge>
-                            <span className="text-sm font-medium">Confidence: {report.confidence}</span>
+                            <span className="text-sm font-medium">{t.reports.confidence}: {report.confidence}</span>
                           </div>
 
                           <div>
-                            <h4 className="font-semibold mb-2">Analysis Summary</h4>
-                            <p className="text-muted-foreground">{report.description}</p>
+                            <h4 className="font-semibold mb-2">{t.reports.analysisSummary}</h4>
+                            <p className="text-muted-foreground">{(rt.reports[report.id] || report).description}</p>
                           </div>
 
                           <div>
-                            <h4 className="font-semibold mb-2">Recommendations</h4>
+                            <h4 className="font-semibold mb-2">{t.reports.recommendations}</h4>
                             <ul className="space-y-1">
-                              {report.recommendations.map((rec, index) => (
+                              {((rt.reports[report.id] || report).recommendations).map((rec, index) => (
                                 <li key={index} className="flex items-start space-x-2 text-sm">
                                   <CheckCircle className="w-3 h-3 text-accent mt-0.5 flex-shrink-0" />
                                   <span>{rec}</span>
@@ -446,7 +448,7 @@ export default function ReportsPage() {
 
                           <Button onClick={() => handleDownloadReport(report)} className="w-full">
                             <Download className="w-4 h-4 mr-2" />
-                            Download Full Report
+                            {t.reports.download}
                           </Button>
                         </div>
                       </DialogContent>
@@ -465,14 +467,14 @@ export default function ReportsPage() {
         {filteredReports.length === 0 && (
           <div className="text-center py-12">
             <Activity className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No Reports Found</h3>
+            <h3 className="text-xl font-semibold mb-2">{t.reports.noReports}</h3>
             <p className="text-muted-foreground mb-4">
               {searchTerm || filterCategory !== "all" || filterSeverity !== "all"
-                ? "Try adjusting your search or filter criteria"
-                : "You haven't completed any health scans yet"}
+                ? t.reports.noReportsFilter
+                : t.reports.noReportsHint}
             </p>
             <Button asChild>
-              <Link href="/scan">Start Your First Scan</Link>
+              <Link href="/scan">{t.common.startFirst}</Link>
             </Button>
           </div>
         )}

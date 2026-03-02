@@ -18,10 +18,10 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "Vaidya - Your AI Health Companion",
+  title: "AI Vaidya - Your AI Health Companion",
   description:
     "Advanced AI-powered health assistant for posture analysis, dermatology scans, ophthalmology checks, and mental health screening.",
-  generator: "Vaidya",
+  generator: "AI Vaidya",
 }
 
 export default function RootLayout({

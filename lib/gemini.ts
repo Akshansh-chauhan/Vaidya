@@ -6,7 +6,7 @@ const GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview:generateContent"
 
 if (!GEMINI_API_KEY) {
-  console.warn("[Vaidya] WARNING: GEMINI_API_KEY environment variable is not set!")
+  console.warn("[AI Vaidya] WARNING: GEMINI_API_KEY environment variable is not set!")
 }
 
 // Enhanced sanitization function with comprehensive security measures
