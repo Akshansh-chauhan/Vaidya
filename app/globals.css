@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated to ancient/vintage medical theme with warm earth tones */
+  --background: #d9cbae; /* Parchment beige background */
+  --foreground: #1f2937; /* Dark text for readability */
+  --card: #e6d7b3; /* Soft terracotta card background */
+  --card-foreground: #1f2937; /* Dark text on cards */
+  --popover: #ffffff; /* White popover for contrast */
+  --popover-foreground: #475569; /* Gray text in popovers */
+  --primary: #a67b4d; /* Bronze primary color */
+  --primary-foreground: #ffffff; /* White text on primary */
+  --secondary: #c2b59b; /* Sage green secondary */
+  --secondary-foreground: #1f2937; /* Dark text on secondary */
+  --muted: #e6d7b3; /* Muted terracotta */
+  --muted-foreground: #6b7280; /* Gray muted text */
+  --accent: #a67b4d; /* Bronze accent */
+  --accent-foreground: #ffffff; /* White text on accent */
+  --destructive: #be123c; /* Red for destructive actions */
+  --destructive-foreground: #ffffff; /* White text on destructive */
+  --border: #bfae8c; /* Light brown border */
+  --input: #ffffff; /* White input background */
+  --ring: #a67b4d; /* Bronze focus ring */
+  --chart-1: #c2b59b; /* Sage green chart */
+  --chart-2: #d9cbae; /* Parchment chart */
+  --chart-3: #e6d7b3; /* Terracotta chart */
+  --chart-4: #a67b4d; /* Bronze chart */
+  --chart-5: #bfae8c; /* Light brown chart */
+  --radius: 0.5rem;
+  --sidebar: #d9cbae; /* Parchment sidebar */
+  --sidebar-foreground: #1f2937; /* Dark sidebar text */
+  --sidebar-primary: #c2b59b; /* Sage sidebar primary */
+  --sidebar-primary-foreground: #1f2937; /* Dark sidebar primary text */
+  --sidebar-accent: #a67b4d; /* Bronze sidebar accent */
+  --sidebar-accent-foreground: #ffffff; /* White sidebar accent text */
+  --sidebar-border: #bfae8c; /* Light brown sidebar border */
+  --sidebar-ring: #a67b4d; /* Bronze sidebar focus ring */
+}
+
+.dark {
+  /* Updated dark mode to maintain ancient theme with darker earth tones */
+  --background: #2d2520; /* Dark brown background */
+  --foreground: #e6d7b3; /* Light terracotta text */
+  --card: #3a312a; /* Darker brown cards */
+  --card-foreground: #e6d7b3; /* Light terracotta card text */
+  --popover: #3a312a; /* Dark brown popover */
+  --popover-foreground: #e6d7b3; /* Light terracotta popover text */
+  --primary: #d4a574; /* Lighter bronze primary in dark mode */
+  --primary-foreground: #2d2520; /* Dark brown text on primary */
+  --secondary: #c2b59b; /* Sage green secondary remains same */
+  --secondary-foreground: #2d2520; /* Dark brown text on secondary */
+  --muted: #4a3f36; /* Darker muted */
+  --muted-foreground: #9ca3af; /* Light gray muted text */
+  --accent: #d4a574; /* Lighter bronze accent */
+  --accent-foreground: #2d2520; /* Dark brown text on accent */
+  --destructive: #dc2626; /* Red destructive */
+  --destructive-foreground: #ffffff; /* White text on destructive */
+  --border: #4a3f36; /* Dark brown border */
+  --input: #3a312a; /* Dark brown input */
+  --ring: #d4a574; /* Lighter bronze focus ring */
+  --chart-1: #d4a574; /* Lighter bronze chart in dark */
+  --chart-2: #c2b59b; /* Sage green chart */
+  --chart-3: #4a3f36; /* Dark brown chart */
+  --chart-4: #6b5b4f; /* Medium brown chart */
+  --chart-5: #dc2626; /* Red chart */
+  --sidebar: #2d2520; /* Dark brown sidebar */
+  --sidebar-foreground: #e6d7b3; /* Light terracotta sidebar text */
+  --sidebar-primary: #4a3f36; /* Dark brown sidebar primary */
+  --sidebar-primary-foreground: #e6d7b3; /* Light terracotta sidebar primary text */
+  --sidebar-accent: #d4a574; /* Lighter bronze sidebar accent */
+  --sidebar-accent-foreground: #2d2520; /* Dark brown sidebar accent text */
+  --sidebar-border: #4a3f36; /* Dark brown sidebar border */
+  --sidebar-ring: #d4a574; /* Lighter bronze sidebar ring */
+}
+
+@theme inline {
+  /* Updated font variables to use Inter and Poppins */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-poppins);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
