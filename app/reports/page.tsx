@@ -178,7 +178,7 @@ export default function ReportsPage() {
     const element = document.createElement("a")
     const file = new Blob(
       [
-        `AI Vaidya Health Report - ${categoryLabels[report.category]}\n\n` +
+        `Vaidya Health Report - ${categoryLabels[report.category]}\n\n` +
         `Date: ${new Date(report.date).toLocaleDateString()}\n` +
         `Condition: ${report.condition}\n` +
         `Confidence: ${report.confidence}\n` +
@@ -238,7 +238,7 @@ export default function ReportsPage() {
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Activity className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold text-foreground">AI Vaidya</span>
+                <span className="text-xl font-bold text-foreground">Vaidya</span>
               </div>
             </div>
             <Button asChild>

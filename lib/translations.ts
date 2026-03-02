@@ -55,7 +55,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "Instant Results", instantDesc: "Get comprehensive health analysis in seconds with our optimized AI models",
             precise: "Precise Analysis", preciseDesc: "Medical-grade accuracy powered by Gemini AI and advanced computer vision",
         },
-        ctaSection: { heading: "Ready to Start Your Health Journey?", subtitle: "Join thousands of users who trust AI Vaidya for their health monitoring needs", button: "Begin Health Assessment" },
+        ctaSection: { heading: "Ready to Start Your Health Journey?", subtitle: "Join thousands of users who trust Vaidya for their health monitoring needs", button: "Begin Health Assessment" },
         footer: { tagline: "Empowering healthcare through artificial intelligence", rights: "All rights reserved." },
     },
     hi: {
@@ -76,7 +76,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "तत्काल परिणाम", instantDesc: "हमारे अनुकूलित AI मॉडल के साथ सेकंडों में व्यापक स्वास्थ्य विश्लेषण प्राप्त करें",
             precise: "सटीक विश्लेषण", preciseDesc: "Gemini AI और उन्नत कंप्यूटर विज़न द्वारा संचालित चिकित्सा-स्तरीय सटीकता",
         },
-        ctaSection: { heading: "अपनी स्वास्थ्य यात्रा शुरू करने के लिए तैयार?", subtitle: "हजारों उपयोगकर्ता अपनी स्वास्थ्य निगरानी आवश्यकताओं के लिए AI Vaidya पर भरोसा करते हैं", button: "स्वास्थ्य मूल्यांकन शुरू करें" },
+        ctaSection: { heading: "अपनी स्वास्थ्य यात्रा शुरू करने के लिए तैयार?", subtitle: "हजारों उपयोगकर्ता अपनी स्वास्थ्य निगरानी आवश्यकताओं के लिए Vaidya पर भरोसा करते हैं", button: "स्वास्थ्य मूल्यांकन शुरू करें" },
         footer: { tagline: "कृत्रिम बुद्धिमत्ता के माध्यम से स्वास्थ्य सेवा को सशक्त बनाना", rights: "सर्वाधिकार सुरक्षित।" },
     },
     es: {
@@ -97,7 +97,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "Resultados Instantáneos", instantDesc: "Obtenga análisis de salud integral en segundos con nuestros modelos de IA optimizados",
             precise: "Análisis Preciso", preciseDesc: "Precisión de grado médico impulsada por Gemini AI y visión por computadora avanzada",
         },
-        ctaSection: { heading: "¿Listo para Iniciar tu Viaje de Salud?", subtitle: "Únete a miles de usuarios que confían en AI Vaidya para sus necesidades de monitoreo de salud", button: "Comenzar Evaluación" },
+        ctaSection: { heading: "¿Listo para Iniciar tu Viaje de Salud?", subtitle: "Únete a miles de usuarios que confían en Vaidya para sus necesidades de monitoreo de salud", button: "Comenzar Evaluación" },
         footer: { tagline: "Empoderando la atención médica a través de la inteligencia artificial", rights: "Todos los derechos reservados." },
     },
     fr: {
@@ -118,7 +118,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "Résultats Instantanés", instantDesc: "Obtenez une analyse de santé complète en quelques secondes avec nos modèles IA",
             precise: "Analyse Précise", preciseDesc: "Précision de grade médical alimentée par Gemini AI et la vision par ordinateur",
         },
-        ctaSection: { heading: "Prêt à Commencer Votre Parcours Santé?", subtitle: "Rejoignez des milliers d'utilisateurs qui font confiance à AI Vaidya pour leur suivi santé", button: "Commencer l'Évaluation" },
+        ctaSection: { heading: "Prêt à Commencer Votre Parcours Santé?", subtitle: "Rejoignez des milliers d'utilisateurs qui font confiance à Vaidya pour leur suivi santé", button: "Commencer l'Évaluation" },
         footer: { tagline: "Donner du pouvoir aux soins de santé grâce à l'intelligence artificielle", rights: "Tous droits réservés." },
     },
     de: {
@@ -139,7 +139,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "Sofortige Ergebnisse", instantDesc: "Erhalten Sie umfassende Gesundheitsanalysen in Sekunden mit unseren optimierten KI-Modellen",
             precise: "Präzise Analyse", preciseDesc: "Medizinische Genauigkeit durch Gemini AI und fortschrittliche Computer Vision",
         },
-        ctaSection: { heading: "Bereit für Ihre Gesundheitsreise?", subtitle: "Schließen Sie sich Tausenden von Nutzern an, die AI Vaidya für ihre Gesundheitsüberwachung vertrauen", button: "Gesundheitsbewertung Starten" },
+        ctaSection: { heading: "Bereit für Ihre Gesundheitsreise?", subtitle: "Schließen Sie sich Tausenden von Nutzern an, die Vaidya für ihre Gesundheitsüberwachung vertrauen", button: "Gesundheitsbewertung Starten" },
         footer: { tagline: "Gesundheitsversorgung durch künstliche Intelligenz stärken", rights: "Alle Rechte vorbehalten." },
     },
     zh: {
@@ -160,7 +160,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "即时结果", instantDesc: "使用我们优化的AI模型，几秒钟内获得全面的健康分析",
             precise: "精确分析", preciseDesc: "由Gemini AI和先进计算机视觉驱动的医疗级精度",
         },
-        ctaSection: { heading: "准备开始您的健康之旅？", subtitle: "加入数千名信任AI Vaidya进行健康监测的用户", button: "开始健康评估" },
+        ctaSection: { heading: "准备开始您的健康之旅？", subtitle: "加入数千名信任Vaidya进行健康监测的用户", button: "开始健康评估" },
         footer: { tagline: "通过人工智能赋能医疗保健", rights: "版权所有。" },
     },
     ja: {
@@ -181,7 +181,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "即時結果", instantDesc: "最適化されたAIモデルで数秒で包括的な健康分析",
             precise: "精密分析", preciseDesc: "Gemini AIと高度なコンピュータビジョンによる医療グレードの精度",
         },
-        ctaSection: { heading: "健康の旅を始める準備はできましたか？", subtitle: "AI Vaidyaを信頼する何千人ものユーザーに参加しましょう", button: "健康評価を開始" },
+        ctaSection: { heading: "健康の旅を始める準備はできましたか？", subtitle: "Vaidyaを信頼する何千人ものユーザーに参加しましょう", button: "健康評価を開始" },
         footer: { tagline: "人工知能によるヘルスケアの力を", rights: "全著作権所有。" },
     },
     ar: {
@@ -202,7 +202,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "نتائج فورية", instantDesc: "احصل على تحليل صحي شامل في ثوانٍ مع نماذج الذكاء الاصطناعي المحسنة",
             precise: "تحليل دقيق", preciseDesc: "دقة طبية مدعومة بـ Gemini AI والرؤية الحاسوبية المتقدمة",
         },
-        ctaSection: { heading: "مستعد لبدء رحلتك الصحية؟", subtitle: "انضم إلى آلاف المستخدمين الذين يثقون بـ AI Vaidya لمراقبة صحتهم", button: "بدء التقييم الصحي" },
+        ctaSection: { heading: "مستعد لبدء رحلتك الصحية؟", subtitle: "انضم إلى آلاف المستخدمين الذين يثقون بـ Vaidya لمراقبة صحتهم", button: "بدء التقييم الصحي" },
         footer: { tagline: "تمكين الرعاية الصحية من خلال الذكاء الاصطناعي", rights: "جميع الحقوق محفوظة." },
     },
     it: {
@@ -223,7 +223,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "Risultati Istantanei", instantDesc: "Ottieni analisi sanitarie complete in pochi secondi con i nostri modelli IA ottimizzati",
             precise: "Analisi Precisa", preciseDesc: "Precisione di livello medico alimentata da Gemini AI e visione artificiale avanzata",
         },
-        ctaSection: { heading: "Pronto per Iniziare il Tuo Percorso Salute?", subtitle: "Unisciti a migliaia di utenti che si affidano a AI Vaidya per il monitoraggio della salute", button: "Inizia Valutazione" },
+        ctaSection: { heading: "Pronto per Iniziare il Tuo Percorso Salute?", subtitle: "Unisciti a migliaia di utenti che si affidano a Vaidya per il monitoraggio della salute", button: "Inizia Valutazione" },
         footer: { tagline: "Potenziare l'assistenza sanitaria attraverso l'intelligenza artificiale", rights: "Tutti i diritti riservati." },
     },
     pt: {
@@ -244,7 +244,7 @@ export const translations: Record<Language, TranslationKeys> = {
             instant: "Resultados Instantâneos", instantDesc: "Obtenha análise de saúde abrangente em segundos com nossos modelos de IA otimizados",
             precise: "Análise Precisa", preciseDesc: "Precisão de grau médico impulsionada por Gemini AI e visão computacional avançada",
         },
-        ctaSection: { heading: "Pronto para Iniciar Sua Jornada de Saúde?", subtitle: "Junte-se a milhares de usuários que confiam no AI Vaidya para monitoramento de saúde", button: "Iniciar Avaliação" },
+        ctaSection: { heading: "Pronto para Iniciar Sua Jornada de Saúde?", subtitle: "Junte-se a milhares de usuários que confiam no Vaidya para monitoramento de saúde", button: "Iniciar Avaliação" },
         footer: { tagline: "Capacitando a saúde através da inteligência artificial", rights: "Todos os direitos reservados." },
     },
 }

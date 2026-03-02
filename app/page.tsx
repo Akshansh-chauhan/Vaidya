@@ -85,7 +85,7 @@ export default function HomePage() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <Activity className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">AI Vaidya</span>
+              <span className="text-xl font-bold text-foreground">Vaidya</span>
             </div>
             <div className="hidden md:flex items-center space-x-6">
               <Link href="/scan" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -272,10 +272,10 @@ export default function HomePage() {
             <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center">
               <Activity className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-semibold">AI Vaidya</span>
+            <span className="text-lg font-semibold">Vaidya</span>
           </div>
           <p className="text-muted-foreground mb-2">{t.footer.tagline}</p>
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} AI Vaidya. {t.footer.rights}</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Vaidya. {t.footer.rights}</p>
         </div>
       </footer>
     </div>

@@ -6,7 +6,7 @@ export default function Loading() {
       <div className="text-center space-y-4">
         <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold text-foreground">Loading AI Vaidya</h2>
+          <h2 className="text-xl font-semibold text-foreground">Loading Vaidya</h2>
           <p className="text-muted-foreground">Preparing your health assistant...</p>
         </div>
       </div>
