@@ -49,6 +49,15 @@ function ChatLanguagePicker({ lang, onSwitch }: { lang: Language; onSwitch: (l: 
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
 
+  // Stop speech when component unmounts (page navigation)
+  useEffect(() => {
+    return () => {
+      if ("speechSynthesis" in window) {
+        speechSynthesis.cancel()
+      }
+    }
+  }, [])
+
   const handleScroll = () => {
     if (!listRef.current) return
     const { scrollTop, scrollHeight, clientHeight } = listRef.current
@@ -140,28 +149,8 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
-  useEffect(() => {
-    const savedMessages = localStorage.getItem(`vaidya-chat-${scanType}`)
-    if (savedMessages) {
-      try {
-        const parsed = JSON.parse(savedMessages)
-        setMessages(
-          parsed.map((msg: any) => ({
-            ...msg,
-            timestamp: new Date(msg.timestamp),
-          })),
-        )
-      } catch (error) {
-        console.error("Failed to load chat history:", error)
-      }
-    }
-  }, [scanType])
 
-  useEffect(() => {
-    if (messages.length > 1) {
-      localStorage.setItem(`vaidya-chat-${scanType}`, JSON.stringify(messages))
-    }
-  }, [messages, scanType])
+
 
   useEffect(() => {
     if (typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)) {
@@ -324,21 +313,32 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
 
       const voices = speechSynthesis.getVoices()
 
-      const languageVoiceMap = {
-        en: "en",
-        es: "es",
-        fr: "fr",
-        de: "de",
-        it: "it",
-        pt: "pt",
-        hi: "hi",
-        zh: "zh",
-        ja: "ja",
-        ar: "ar",
+      // BCP-47 locale codes for proper accent/voice matching
+      const languageLocaleMap: Record<string, string> = {
+        en: "en-US",
+        es: "es-ES",
+        fr: "fr-FR",
+        de: "de-DE",
+        it: "it-IT",
+        pt: "pt-BR",
+        hi: "hi-IN",
+        zh: "zh-CN",
+        ja: "ja-JP",
+        ar: "ar-SA",
       }
 
-      const targetLang = languageVoiceMap[currentLanguage as keyof typeof languageVoiceMap] || "en"
-      const preferredVoice = voices.find((voice) => voice.lang.startsWith(targetLang)) || voices[0]
+      const targetLocale = languageLocaleMap[currentLanguage] || "en-US"
+      const targetLangPrefix = targetLocale.split("-")[0]
+
+      // Set utterance language — this is critical for accent
+      utterance.lang = targetLocale
+
+      // Try exact locale match first, then prefix match, then default
+      const preferredVoice =
+        voices.find((v) => v.lang === targetLocale) ||
+        voices.find((v) => v.lang.startsWith(targetLangPrefix + "-")) ||
+        voices.find((v) => v.lang.startsWith(targetLangPrefix)) ||
+        voices[0]
 
       if (preferredVoice) {
         utterance.voice = preferredVoice
@@ -463,11 +463,10 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => speakText(message.content)}
+                          onClick={() => isSpeaking ? stopSpeaking() : speakText(message.content)}
                           className="h-6 w-6 p-0"
-                          disabled={isSpeaking}
                         >
-                          <Volume2 className="w-3 h-3" />
+                          {isSpeaking ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
                         </Button>
                       )}
                     </div>
