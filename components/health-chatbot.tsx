@@ -134,6 +134,11 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
       fr: `Bonjour ! Je suis votre assistant santé IA pour ${title.toLowerCase()}. Je peux analyser vos images, répondre aux questions et fournir des recommandations personnalisées. Vous pouvez me parler en utilisant le microphone ou taper vos messages. Comment puis-je vous aider aujourd'hui ?`,
       de: `Hallo! Ich bin Ihr KI-Gesundheitsassistent für ${title.toLowerCase()}. Ich kann Ihre Bilder analysieren, Fragen beantworten und personalisierte Empfehlungen geben. Sie können mit mir über das Mikrofon sprechen oder Ihre Nachrichten tippen. Wie kann ich Ihnen heute helfen?`,
       hi: `नमस्ते! मैं ${title.toLowerCase()} के लिए आपका AI स्वास्थ्य सहायक हूं। मैं आपकी छवियों का विश्लेषण कर सकता हूं, प्रश्नों के उत्तर दे सकता हूं और व्यक्तिगत सिफारिशें प्रदान कर सकता हूं। आप माइक्रोफ़ोन का उपयोग करके मुझसे बात कर सकते हैं या अपने संदेश टाइप कर सकते हैं। आज मैं आपकी कैसे सहायता कर सकता हूं?`,
+      it: `Ciao! Sono il tuo assistente sanitario IA per ${title.toLowerCase()}. Posso analizzare le tue immagini, rispondere alle domande e fornire raccomandazioni personalizzate. Puoi parlarmi usando il microfono o digitare i tuoi messaggi. Come posso aiutarti oggi?`,
+      pt: `Olá! Sou o seu assistente de saúde IA para ${title.toLowerCase()}. Posso analisar as suas imagens, responder a perguntas e fornecer recomendações personalizadas. Pode falar comigo usando o microfone ou digitar as suas mensagens. Como posso ajudá-lo hoje?`,
+      zh: `你好！我是你的${title.toLowerCase()} AI 健康助手。我可以分析您的图像、回答问题并提供个性化建议。您可以使用麦克风对我说话或输入您的信息。今天我能如何帮助您？`,
+      ja: `こんにちは！私はあなたの${title.toLowerCase()}のAI健康アシスタントです。画像の分析、質問への回答、パーソナライズされた推奨事項の提供が可能です。マイクを使って話しかけたり、メッセージを入力したりできます。今日はどのようなご用件でしょうか？`,
+      ar: `مرحباً! أنا مساعدك الصحي المدعوم بالذكاء الاصطناعي لـ ${title.toLowerCase()}. يمكنني تحليل صورك والإجابة على الأسئلة وتقديم توصيات مخصصة. يمكنك التحدث إلي باستخدام الميكروفون أو كتابة رسائلك. كيف يمكنني مساعدتك اليوم؟`,
     }
     return welcomeMessages[language as keyof typeof welcomeMessages] || welcomeMessages.en
   }
