@@ -30,3 +30,23 @@ CREATE POLICY "Allow all operations" ON health_records
   FOR ALL
   USING (true)
   WITH CHECK (true);
+
+-- ============================================
+-- Exercise progress tracking
+-- ============================================
+
+CREATE TABLE exercise_progress (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL DEFAULT 'default',
+  exercise_id TEXT NOT NULL,
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_exercise_progress_user_id ON exercise_progress(user_id);
+
+ALTER TABLE exercise_progress ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all operations" ON exercise_progress
+  FOR ALL
+  USING (true)
+  WITH CHECK (true);

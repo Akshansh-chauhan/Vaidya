@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { analyzeWithGeminiChat } from "@/lib/gemini"
+import { saveHealthRecord } from "@/lib/database"
+import { getAuthUserId } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,12 +35,39 @@ export async function POST(request: NextRequest) {
       language,
     )
 
+    const userId = await getAuthUserId(request)
+
+    // Save to Supabase
+    try {
+      await saveHealthRecord({
+        id: `eye-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+        userId,
+        category: "eye",
+        analysis: {
+          userMessage: message || "Image uploaded for eye assessment",
+          aiResponse: result.response,
+          type: result.type,
+          language,
+          confidence: file ? "82%" : "68%",
+          severity: "low",
+          condition: "Eye Health Analysis",
+        },
+        timestamp: new Date().toISOString(),
+        fileInfo: file
+          ? {
+              fileName: file.name,
+              fileSize: file.size,
+              fileType: file.type,
+            }
+          : undefined,
+      })
+    } catch (dbError) {
+      console.error("Failed to save eye record:", dbError)
+    }
+
     return NextResponse.json(result)
   } catch (error) {
     console.error("Eye chat API error:", error)
-
-    const formData = await request.formData()
-    const language = (formData.get("language") as string) || "en"
 
     const errorMessages = {
       en: "I'm sorry, I encountered an error analyzing your eye health. Please try again or consult with an eye care professional.",
@@ -48,7 +77,7 @@ export async function POST(request: NextRequest) {
       hi: "मुझे खेद है, मुझे आपकी आंखों के स्वास्थ्य का विश्लेषण करने में त्रुटि का सामना करना पड़ा। कृपया पुनः प्रयास करें या नेत्र देखभाल पेशेवर से सलाह लें।",
     }
 
-    const errorMessage = errorMessages[language as keyof typeof errorMessages] || errorMessages.en
+    const errorMessage = errorMessages["en" as keyof typeof errorMessages] || errorMessages.en
 
     return NextResponse.json(
       {

@@ -42,8 +42,8 @@ export function sanitizeGeminiOutput(text: string): string {
     filtered = filtered.replace(filter, "[CONTENT FILTERED FOR SAFETY]")
   })
 
-  if (filtered.length > 500) {
-    filtered = filtered.substring(0, 500) + "..."
+  if (filtered.length > 2000) {
+    filtered = filtered.substring(0, 2000) + "..."
   }
 
   return filtered

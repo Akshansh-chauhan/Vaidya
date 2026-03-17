@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Send, Mic, MicOff, Volume2, VolumeX, Upload, Bot, User, FileText, Loader2, Globe, ChevronDown, Check } from "lucide-react"
 import { LANGUAGE_NAMES, type Language } from "@/lib/translations"
 import { useLanguage } from "@/lib/use-language"
+import { useAuth } from "@/components/auth-provider"
+import { getSupabaseClient } from "@/lib/supabase"
 
 declare global {
   interface Window {
@@ -108,6 +110,7 @@ function ChatLanguagePicker({ lang, onSwitch }: { lang: Language; onSwitch: (l: 
 
 export default function HealthChatbot({ scanType, title, description, acceptedFiles }: HealthChatbotProps) {
   const [lang, setLang] = useLanguage()
+  const { user } = useAuth()
   const currentLanguage = lang
   const setCurrentLanguage = setLang
   const [messages, setMessages] = useState<Message[]>([])
@@ -273,8 +276,11 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
       formData.append("chatHistory", JSON.stringify(messages))
       formData.append("language", currentLanguage)
 
+      const token = (await getSupabaseClient().auth.getSession()).data.session?.access_token
+
       const response = await fetch(`/api/chat/${scanType}`, {
         method: "POST",
+        headers: token ? { "Authorization": `Bearer ${token}` } : {},
         body: formData,
       })
 

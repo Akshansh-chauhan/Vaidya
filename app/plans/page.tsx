@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +12,10 @@ import { Activity, Eye, Scan, Brain, ArrowLeft, Clock, Target, CheckCircle, Rota
 import { useLanguage } from "@/lib/use-language"
 import { getSubPageTranslations } from "@/lib/sub-translations"
 import { getPlansTranslations } from "@/lib/mock-data-translations"
+import { useAuth } from "@/components/auth-provider"
+import { useRouter } from "next/navigation"
+import { getSupabaseClient } from "@/lib/supabase"
+import { Loader2 } from "lucide-react"
 
 interface Exercise {
   id: string
@@ -37,10 +41,74 @@ export default function PlansPage() {
   const [lang] = useLanguage()
   const t = getSubPageTranslations(lang)
   const pt = getPlansTranslations(lang)
+  const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState("posture")
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
   const [timerActive, setTimerActive] = useState<string | null>(null)
   const [timerSeconds, setTimerSeconds] = useState(0)
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login")
+    }
+  }, [user, authLoading, router])
+
+  // Load completed exercises from Supabase on mount
+  useEffect(() => {
+    async function loadProgress() {
+      if (!user) return
+      try {
+        const token = (await getSupabaseClient().auth.getSession()).data.session?.access_token
+        const res = await fetch("/api/exercise-progress", {
+          headers: token ? { "Authorization": `Bearer ${token}` } : {}
+        })
+        if (res.ok) {
+          const data = await res.json()
+          setCompletedExercises(new Set(data.completed || []))
+        }
+      } catch (error) {
+        console.error("Failed to load exercise progress:", error)
+      }
+    }
+    if (!authLoading && user) {
+      loadProgress()
+    }
+  }, [user, authLoading])
+
+  const toggleExerciseComplete = useCallback(async (exerciseId: string) => {
+    const isCurrentlyCompleted = completedExercises.has(exerciseId)
+    const newCompleted = new Set(completedExercises)
+
+    // Optimistic update
+    if (isCurrentlyCompleted) {
+      newCompleted.delete(exerciseId)
+    } else {
+      newCompleted.add(exerciseId)
+    }
+    setCompletedExercises(newCompleted)
+
+    // Persist to Supabase
+    try {
+      const token = (await getSupabaseClient().auth.getSession()).data.session?.access_token
+      await fetch("/api/exercise-progress", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({
+          exerciseId,
+          completed: !isCurrentlyCompleted,
+        }),
+      })
+    } catch (error) {
+      console.error("Failed to save exercise progress:", error)
+      // Revert on failure
+      const reverted = new Set(completedExercises)
+      setCompletedExercises(reverted)
+    }
+  }, [completedExercises])
 
   const healthPlans: HealthPlan[] = [
     { category: "posture", title: pt.posture.title, description: pt.posture.description, icon: Activity, exercises: pt.posture.exercises.map((e, i) => ({ id: `p${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "beginner", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.posture.tips, goals: pt.posture.goals },
@@ -48,16 +116,6 @@ export default function PlansPage() {
     { category: "eye", title: pt.eye.title, description: pt.eye.description, icon: Eye, exercises: pt.eye.exercises.map((e, i) => ({ id: `e${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "beginner", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.eye.tips, goals: pt.eye.goals },
     { category: "mental", title: pt.mental.title, description: pt.mental.description, icon: Brain, exercises: pt.mental.exercises.map((e, i) => ({ id: `m${i + 1}`, name: e.name, duration: e.duration, difficulty: (["beginner", "beginner", "beginner"] as const)[i], instructions: e.instructions, benefits: e.benefits, frequency: e.frequency })), tips: pt.mental.tips, goals: pt.mental.goals },
   ]
-
-  const toggleExerciseComplete = (exerciseId: string) => {
-    const newCompleted = new Set(completedExercises)
-    if (newCompleted.has(exerciseId)) {
-      newCompleted.delete(exerciseId)
-    } else {
-      newCompleted.add(exerciseId)
-    }
-    setCompletedExercises(newCompleted)
-  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {

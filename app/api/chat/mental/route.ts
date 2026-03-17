@@ -1,5 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { analyzeWithGeminiChat } from "@/lib/gemini"
+import { saveHealthRecord } from "@/lib/database"
+import { getAuthUserId } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +31,33 @@ export async function POST(request: NextRequest) {
         undefined,
         language,
       )
+
+      // Save audio interaction to Supabase
+      try {
+        await saveHealthRecord({
+          id: `mental-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+          userId: "default",
+          category: "mental",
+          analysis: {
+            userMessage: message || "Audio message for mental health assessment",
+            aiResponse: result.response,
+            type: "audio-analysis",
+            language,
+            confidence: "75%",
+            severity: "medium",
+            condition: "Mental Health Assessment",
+          },
+          timestamp: new Date().toISOString(),
+          fileInfo: {
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type,
+          },
+        })
+      } catch (dbError) {
+        console.error("Failed to save mental health record:", dbError)
+      }
+
       return NextResponse.json(result)
     }
 
@@ -40,12 +69,32 @@ export async function POST(request: NextRequest) {
       language,
     )
 
+    const userId = await getAuthUserId(request)
+
+    // Save to Supabase
+    try {
+      await saveHealthRecord({
+        id: `mental-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+        userId,
+        category: "mental",
+        analysis: {
+          userMessage: message || "Mental health guidance request",
+          aiResponse: result.response,
+          type: result.type,
+          language,
+          confidence: "70%",
+          severity: "medium",
+          condition: "Mental Health Check",
+        },
+        timestamp: new Date().toISOString(),
+      })
+    } catch (dbError) {
+      console.error("Failed to save mental health record:", dbError)
+    }
+
     return NextResponse.json(result)
   } catch (error) {
     console.error("Mental health chat API error:", error)
-
-    const formData = await request.formData()
-    const language = (formData.get("language") as string) || "en"
 
     const errorMessages = {
       en: "I'm here to support you. If you're experiencing a mental health crisis, please contact a mental health professional or crisis hotline immediately. For general wellness, I'm happy to help with stress management and coping strategies.",
@@ -55,7 +104,7 @@ export async function POST(request: NextRequest) {
       hi: "मैं आपका समर्थन करने के लिए यहाँ हूँ। यदि आप मानसिक स्वास्थ्य संकट का सामना कर रहे हैं, तो कृपया तुरंत मानसिक स्वास्थ्य पेशेवर या संकट हॉटलाइन से संपर्क करें। सामान्य कल्याण के लिए, मैं तनाव प्रबंधन और मुकाबला रणनीतियों में मदद करने में खुश हूँ।",
     }
 
-    const errorMessage = errorMessages[language as keyof typeof errorMessages] || errorMessages.en
+    const errorMessage = errorMessages["en" as keyof typeof errorMessages] || errorMessages.en
 
     return NextResponse.json(
       {

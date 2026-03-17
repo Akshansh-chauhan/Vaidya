@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Activity, Eye, Scan, Brain, Shield, Zap, Target, ArrowRight, CheckCircle, Globe, ChevronDown, Check } from "lucide-react"
 import { translations, LANGUAGE_NAMES, type Language } from "@/lib/translations"
 import { useLanguage } from "@/lib/use-language"
+import { useAuth } from "@/components/auth-provider"
 
 function LanguagePicker({ lang, onSwitch }: { lang: Language; onSwitch: (l: Language) => void }) {
   const [open, setOpen] = useState(false)
@@ -74,6 +75,7 @@ function LanguagePicker({ lang, onSwitch }: { lang: Language; onSwitch: (l: Lang
 export default function HomePage() {
   const [lang, switchLanguage] = useLanguage()
   const t = translations[lang]
+  const { user, signOut } = useAuth()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card/30 to-background">
@@ -98,10 +100,28 @@ export default function HomePage() {
                 {t.nav.plans}
               </Link>
               <LanguagePicker lang={lang} onSwitch={switchLanguage} />
+              
+              {user ? (
+                <div className="flex items-center gap-4 ml-4 pl-4 border-l border-border">
+                  <span className="text-sm text-muted-foreground hidden lg:inline">{user.email}</span>
+                  <Button variant="outline" size="sm" onClick={() => signOut()}>
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button size="sm" asChild>
+                  <Link href="/login">Sign In</Link>
+                </Button>
+              )}
             </div>
-            {/* Mobile language switcher */}
-            <div className="md:hidden">
+            {/* Mobile language switcher + User mobile */}
+            <div className="flex items-center gap-2 md:hidden">
               <LanguagePicker lang={lang} onSwitch={switchLanguage} />
+              {user && (
+                <Button variant="ghost" size="sm" onClick={() => signOut()} className="px-2">
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
         </div>

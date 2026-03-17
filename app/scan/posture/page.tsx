@@ -5,10 +5,30 @@ import { ArrowLeft, Activity } from "lucide-react"
 import HealthChatbot from "@/components/health-chatbot"
 import { useLanguage } from "@/lib/use-language"
 import { getSubPageTranslations } from "@/lib/sub-translations"
+import { useAuth } from "@/components/auth-provider"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
+import { Loader2 } from "lucide-react"
 
 export default function PostureScanPage() {
   const [lang] = useLanguage()
   const t = getSubPageTranslations(lang)
+  const { user, loading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login")
+    }
+  }, [user, loading, router])
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card/30 to-background">
