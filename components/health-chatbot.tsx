@@ -181,7 +181,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
         setIsProcessingSTT(false)
       }
 
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: any) => {
         let finalTranscript = ""
         let interimTranscript = ""
 
@@ -199,7 +199,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
         }
       }
 
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event.error)
         setIsRecording(false)
         setIsProcessingSTT(false)
@@ -291,10 +291,6 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
       const result = await response.json()
 
       addMessage(result.response, "bot", result.type || "text")
-
-      if (result.response && "speechSynthesis" in window) {
-        speakText(result.response)
-      }
     } catch (error) {
       console.error("Chat error:", error)
       const errorMessages = {
@@ -405,12 +401,9 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
   }
 
   useEffect(() => {
-    if (messages.length === 1 && "speechSynthesis" in window) {
-      setTimeout(() => {
-        speakText(messages[0].content)
-      }, 1000)
-    }
-  }, [])
+    // Scroll to bottom when messages change
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   return (
     <div className="flex flex-col h-[600px] max-w-4xl mx-auto">
