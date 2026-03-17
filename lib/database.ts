@@ -1,5 +1,21 @@
-const JSONBLOB_BASE_URL = "https://jsonblob.com/api"
-const BLOB_ID = "019caec1-7ca7-7b2c-bf5c-94dc800481de"
+import { createClient, SupabaseClient } from "@supabase/supabase-js"
+
+let _supabase: SupabaseClient | null = null
+
+function getSupabase(): SupabaseClient {
+  if (!_supabase) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.warn("[Vaidya] WARNING: Supabase environment variables are not set!")
+    }
+
+    _supabase = createClient(supabaseUrl, supabaseAnonKey)
+  }
+  return _supabase
+}
+
 
 export interface HealthRecord {
   id: string
@@ -32,92 +48,133 @@ export interface UserData {
   }
 }
 
-// Get all data from JSONBlob
+// Get all health data (reconstructed from Supabase records)
 export async function getHealthData(): Promise<UserData> {
   try {
-    const response = await fetch(`${JSONBLOB_BASE_URL}/jsonBlob/${BLOB_ID}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+    const { data: records, error } = await getSupabase()
+      .from("health_records")
+      .select("*")
+      .order("timestamp", { ascending: false })
+
+    if (error) {
+      console.error("Error fetching health data:", error.message)
+      return getEmptyData()
+    }
+
+    const healthRecords: HealthRecord[] = (records || []).map(mapRowToRecord)
+
+    // Compute summary from records
+    const categoryScores: Record<string, number> = {}
+    const categories = ["posture", "skin", "eye", "mental"]
+
+    categories.forEach((category) => {
+      const catRecords = healthRecords.filter((r) => r.category === category)
+      if (catRecords.length > 0) {
+        const avgScore =
+          catRecords.reduce(
+            (sum, r) => sum + parseFloat(r.analysis?.confidence?.replace("%", "") || "0"),
+            0,
+          ) / catRecords.length
+        categoryScores[category] = avgScore
+      }
     })
 
-    if (!response.ok) {
-      // Initialize with empty data if blob doesn't exist
-      return {
-        users: {},
-        healthRecords: [],
-        summary: {
-          lastUpdated: new Date().toISOString(),
-          overallScore: 0,
-          categoryScores: {},
-        },
-      }
-    }
+    const scores = Object.values(categoryScores)
+    const overallScore =
+      scores.length > 0
+        ? Math.round(scores.reduce((sum, s) => sum + s, 0) / scores.length)
+        : 0
 
-    return await response.json()
-  } catch (error) {
-    console.error("Error fetching health data:", error)
     return {
       users: {},
-      healthRecords: [],
+      healthRecords,
       summary: {
         lastUpdated: new Date().toISOString(),
-        overallScore: 0,
-        categoryScores: {},
+        overallScore,
+        categoryScores,
       },
     }
+  } catch (error) {
+    console.error("Error fetching health data:", error)
+    return getEmptyData()
   }
 }
 
-// Save health record to JSONBlob
+// Save a health record to Supabase
 export async function saveHealthRecord(record: HealthRecord): Promise<boolean> {
   try {
-    const currentData = await getHealthData()
-
-    // Add new record
-    currentData.healthRecords.push(record)
-
-    // Update summary scores
-    const categoryRecords = currentData.healthRecords.filter((r) => r.category === record.category)
-    const avgScore =
-      categoryRecords.length > 0
-        ? categoryRecords.reduce((sum, r) => sum + Number.parseFloat(r.analysis.confidence.replace("%", "")), 0) /
-        categoryRecords.length
-        : 0
-
-    currentData.summary.categoryScores[record.category] = avgScore
-    currentData.summary.lastUpdated = new Date().toISOString()
-
-    // Calculate overall score
-    const scores = Object.values(currentData.summary.categoryScores)
-    currentData.summary.overallScore =
-      scores.length > 0 ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0
-
-    // Save to JSONBlob
-    const response = await fetch(`${JSONBLOB_BASE_URL}/jsonBlob/${BLOB_ID}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(currentData),
+    const { error } = await getSupabase().from("health_records").insert({
+      id: record.id,
+      user_id: record.userId,
+      category: record.category,
+      analysis: record.analysis,
+      timestamp: record.timestamp,
+      file_name: record.fileInfo?.fileName || null,
+      file_size: record.fileInfo?.fileSize || null,
+      file_type: record.fileInfo?.fileType || null,
     })
 
-    return response.ok
+    if (error) {
+      console.error("Error saving health record:", error.message)
+      return false
+    }
+
+    return true
   } catch (error) {
     console.error("Error saving health record:", error)
     return false
   }
 }
 
-// Get user's health records
+// Get a user's health records
 export async function getUserHealthRecords(userId = "default"): Promise<HealthRecord[]> {
   try {
-    const data = await getHealthData()
-    return data.healthRecords.filter((record) => record.userId === userId)
+    const { data: records, error } = await getSupabase()
+      .from("health_records")
+      .select("*")
+      .eq("user_id", userId)
+      .order("timestamp", { ascending: false })
+
+    if (error) {
+      console.error("Error fetching user records:", error.message)
+      return []
+    }
+
+    return (records || []).map(mapRowToRecord)
   } catch (error) {
     console.error("Error fetching user records:", error)
     return []
+  }
+}
+
+// ── Helpers ──
+
+function mapRowToRecord(row: any): HealthRecord {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    category: row.category,
+    analysis: row.analysis,
+    timestamp: row.timestamp,
+    fileInfo:
+      row.file_name
+        ? {
+            fileName: row.file_name,
+            fileSize: row.file_size ?? 0,
+            fileType: row.file_type ?? "",
+          }
+        : undefined,
+  }
+}
+
+function getEmptyData(): UserData {
+  return {
+    users: {},
+    healthRecords: [],
+    summary: {
+      lastUpdated: new Date().toISOString(),
+      overallScore: 0,
+      categoryScores: {},
+    },
   }
 }

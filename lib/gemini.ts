@@ -3,7 +3,7 @@ const fetch = global.fetch // Use global fetch available in Next.js
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || ""
 const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview:generateContent"
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 if (!GEMINI_API_KEY) {
   console.warn("[Vaidya] WARNING: GEMINI_API_KEY environment variable is not set!")
