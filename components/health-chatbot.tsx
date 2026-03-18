@@ -126,6 +126,9 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
   const audioChunksRef = useRef<Blob[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const recognitionRef = useRef<any>(null)
+  
+  // Create a stable session ID for this specific chat instance
+  const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`)
 
   const getWelcomeMessage = (language: string, scanType: string) => {
     const welcomeMessages = {
@@ -273,13 +276,15 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
 
     try {
       const formData = new FormData()
+      formData.append("message", inputMessage.trim())
+      formData.append("language", currentLanguage)
+      formData.append("chatHistory", JSON.stringify(messages))
+      formData.append("sessionId", sessionId) // Pass sessionId to preserve the report record
+
       if (uploadedFile) {
         formData.append("file", uploadedFile)
         setUploadedFile(null)
       }
-      formData.append("message", inputMessage.trim())
-      formData.append("chatHistory", JSON.stringify(messages))
-      formData.append("language", currentLanguage)
 
       const token = (await getSupabaseClient().auth.getSession()).data.session?.access_token
 

@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
       description: record.analysis?.aiResponse || "No detailed description available.",
       recommendations: extractRecommendations(record.analysis?.aiResponse || ""),
       userMessage: record.analysis?.userMessage || "",
+      chatHistory: record.analysis?.chatHistory || [],
     }))
 
     return NextResponse.json({ reports })

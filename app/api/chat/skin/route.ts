@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const chatHistoryStr = formData.get("chatHistory") as string
     const file = formData.get("file") as File | null
     const language = (formData.get("language") as string) || "en"
+    const sessionId = formData.get("sessionId") as string
 
     let chatHistory = []
     if (chatHistoryStr) {
@@ -40,12 +41,13 @@ export async function POST(request: NextRequest) {
     // Save to Supabase
     try {
       await saveHealthRecord({
-        id: `skin-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+        id: sessionId || `skin-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
         userId,
         category: "skin",
         analysis: {
           userMessage: message || "Image uploaded for skin assessment",
           aiResponse: result.response,
+          chatHistory: chatHistory,
           type: result.type,
           language,
           confidence: file ? "88%" : "72%",

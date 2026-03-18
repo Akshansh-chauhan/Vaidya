@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const chatHistoryStr = formData.get("chatHistory") as string
     const file = formData.get("file") as File | null
     const language = (formData.get("language") as string) || "en"
+    const sessionId = formData.get("sessionId") as string
 
     let chatHistory = []
     if (chatHistoryStr) {
@@ -74,12 +75,13 @@ export async function POST(request: NextRequest) {
     // Save to Supabase
     try {
       await saveHealthRecord({
-        id: `mental-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+        id: sessionId || `mental-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
         userId,
         category: "mental",
         analysis: {
-          userMessage: message || "Mental health guidance request",
+          userMessage: message || "Mental health check-in stated",
           aiResponse: result.response,
+          chatHistory: chatHistory,
           type: result.type,
           language,
           confidence: "70%",

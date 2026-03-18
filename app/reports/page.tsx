@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { jsPDF } from "jspdf"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -47,6 +48,7 @@ interface HealthReport {
   recommendations: string[]
   description: string
   userMessage?: string
+  chatHistory?: { role: "user" | "model"; content: string }[]
 }
 
 const categoryIcons = {
@@ -130,24 +132,157 @@ export default function ReportsPage() {
   })
 
   const handleDownloadReport = (report: HealthReport) => {
-    const element = document.createElement("a")
-    const file = new Blob(
-      [
-        `Vaidya Health Report - ${categoryLabelsDefault[report.category]}\n\n` +
-        `Date: ${new Date(report.date).toLocaleDateString()}\n` +
-        `Condition: ${report.condition}\n` +
-        `Confidence: ${report.confidence}\n` +
-        `Severity: ${report.severity.toUpperCase()}\n\n` +
-        `Description:\n${report.description}\n\n` +
-        `Recommendations:\n${report.recommendations.map((rec, i) => `${i + 1}. ${rec}`).join("\n")}`,
-      ],
-      { type: "text/plain" },
-    )
-    element.href = URL.createObjectURL(file)
-    element.download = `vaidya-report-${report.id}.txt`
-    document.body.appendChild(element)
-    element.click()
-    document.body.removeChild(element)
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4"
+    })
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
+    const margin = 20
+
+    // Vaidya Watermark
+    doc.setTextColor(245, 245, 245)
+    doc.setFontSize(80)
+    doc.text("VAIDYA AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' })
+
+    // Header strip
+    doc.setFillColor(166, 123, 77) // #a67b4d
+    doc.rect(0, 0, pageWidth, 40, "F")
+
+    doc.setTextColor(255, 255, 255)
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(28)
+    doc.text("VAIDYA", margin, 26)
+
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(11)
+    doc.text("AI Health Companion", margin, 33)
+
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(16)
+    doc.text("CLINICAL ANALYSIS REPORT", pageWidth - margin, 26, { align: "right" })
+
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(10)
+    doc.text(`Date: ${new Date(report.date).toLocaleDateString()}`, pageWidth - margin, 33, { align: "right" })
+
+    // Report Details Section
+    let y = 50
+    doc.setTextColor(31, 41, 55)
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(14)
+    doc.text("REPORT DETAILS", margin, y)
+    
+    y += 6
+    doc.setDrawColor(200, 200, 200)
+    doc.setFillColor(250, 250, 250)
+    doc.roundedRect(margin, y, pageWidth - (margin * 2), 26, 2, 2, "FD")
+
+    y += 9
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(10)
+    doc.text("Category:", margin + 5, y)
+    doc.setFont("helvetica", "normal")
+    doc.text(categoryLabelsDefault[report.category] || "General", margin + 30, y)
+
+    doc.setFont("helvetica", "bold")
+    doc.text("Confidence:", pageWidth / 2, y)
+    doc.setFont("helvetica", "normal")
+    doc.text(report.confidence, pageWidth / 2 + 25, y)
+
+    y += 10
+    doc.setFont("helvetica", "bold")
+    doc.text("Condition:", margin + 5, y)
+    doc.setFont("helvetica", "normal")
+    doc.text(report.condition, margin + 30, y)
+
+    doc.setFont("helvetica", "bold")
+    doc.text("Severity:", pageWidth / 2, y)
+    
+    // Dynamic Severity color for PDF
+    if (report.severity === "high") doc.setTextColor(220, 50, 50)
+    else if (report.severity === "medium") doc.setTextColor(180, 100, 50)
+    else doc.setTextColor(50, 150, 50)
+
+    doc.setFont("helvetica", "bold")
+    doc.text(report.severity.toUpperCase(), pageWidth / 2 + 25, y)
+    doc.setTextColor(31, 41, 55) // Reset color
+
+    y += 24
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(14)
+    doc.text("EXECUTIVE SUMMARY", margin, y)
+    
+    y += 8
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(10)
+    const splitSummary = doc.splitTextToSize(report.description || report.summary || "", pageWidth - (margin * 2))
+    doc.text(splitSummary, margin, y)
+    y += (splitSummary.length * 5) + 6
+
+    // Recommendations
+    if (y > pageHeight - 60) { doc.addPage(); y = 30 }
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(14)
+    doc.text("KEY RECOMMENDATIONS", margin, y)
+    
+    y += 8
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(10)
+    report.recommendations.forEach((rec, idx) => {
+      if (y > pageHeight - 20) { doc.addPage(); y = 30 }
+      const splitRec = doc.splitTextToSize(`•  ${rec}`, pageWidth - (margin * 2) - 5)
+      doc.text(splitRec, margin + 5, y)
+      y += (splitRec.length * 5) + 3
+    })
+
+    // Consultation History
+    if (report.chatHistory && report.chatHistory.length > 0) {
+      y += 10
+      if (y > pageHeight - 60) { doc.addPage(); y = 30 }
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(14)
+      doc.text("CONSULTATION TRANSCRIPT", margin, y)
+      y += 8
+
+      report.chatHistory.forEach(msg => {
+        if (y > pageHeight - 20) { doc.addPage(); y = 30 }
+        doc.setFont("helvetica", "bold")
+        doc.setFontSize(9)
+        if (msg.role === "user") {
+          doc.setTextColor(100, 100, 100)
+          doc.text("PATIENT:", margin, y)
+        } else {
+          doc.setTextColor(166, 123, 77)
+          doc.text("VAIDYA AI:", margin, y)
+        }
+        
+        y += 5
+        doc.setFont("helvetica", "normal")
+        doc.setTextColor(50, 50, 50)
+        const splitMsg = doc.splitTextToSize(msg.content || "", pageWidth - (margin * 2) - 5)
+        doc.text(splitMsg, margin + 5, y)
+        y += (splitMsg.length * 5) + 5
+      })
+    }
+
+    // Footer Pagination
+    // To support older jspdf types
+    const pageCount = (doc as any).internal.getNumberOfPages()
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i)
+      doc.setFont("helvetica", "italic")
+      doc.setFontSize(8)
+      doc.setTextColor(150, 150, 150)
+      doc.setDrawColor(200, 200, 200)
+      doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15)
+      doc.text("Generated by Vaidya AI. This report is for informational purposes only and does not constitute medical advice.", pageWidth / 2, pageHeight - 10, { align: "center" })
+      doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: "right" })
+    }
+
+    doc.save(`Vaidya_Report_${categoryLabelsDefault[report.category]}_${new Date(report.date).toISOString().split('T')[0]}.pdf`)
   }
 
   const getSeverityColor = (severity: string) => {
@@ -394,17 +529,43 @@ export default function ReportsPage() {
                                 <span className="text-sm font-medium">{t.reports.confidence}: {report.confidence}</span>
                               </div>
 
-                              {report.userMessage && (
-                                <div>
-                                  <h4 className="font-semibold mb-2">Your Message</h4>
-                                  <p className="text-muted-foreground bg-secondary/30 p-3 rounded-lg">{report.userMessage}</p>
+                              {report.chatHistory && report.chatHistory.length > 0 ? (
+                                <div className="space-y-3 mb-6">
+                                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                    <Activity className="w-4 h-4 text-primary" /> 
+                                    {t.reports.analysisSummary || "Conversation History"}
+                                  </h4>
+                                  <div className="space-y-3 border border-border p-4 rounded-xl bg-card/50 max-h-[40vh] overflow-y-auto">
+                                    {report.chatHistory.map((msg, idx) => (
+                                      <div key={idx} className={`p-3 rounded-lg ${msg.role === "user" ? "bg-secondary/40 ml-12" : "bg-primary/10 mr-12"}`}>
+                                        <p className="text-xs font-semibold mb-1 opacity-70">{msg.role === "user" ? "You" : "Vaidya AI"}</p>
+                                        <p className="text-sm text-foreground whitespace-pre-wrap">{msg.content}</p>
+                                      </div>
+                                    ))}
+                                    {/* Final Response (if not already in history) */}
+                                    {report.description && (
+                                      <div className="p-3 rounded-lg bg-primary/10 mr-12">
+                                        <p className="text-xs font-semibold mb-1 opacity-70">Vaidya AI</p>
+                                        <p className="text-sm text-foreground whitespace-pre-wrap">{report.description}</p>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                              )}
+                              ) : (
+                                <>
+                                  {report.userMessage && (
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Your Message</h4>
+                                      <p className="text-muted-foreground bg-secondary/30 p-3 rounded-lg">{report.userMessage}</p>
+                                    </div>
+                                  )}
 
-                              <div>
-                                <h4 className="font-semibold mb-2">{t.reports.analysisSummary}</h4>
-                                <p className="text-muted-foreground">{report.description}</p>
-                              </div>
+                                  <div>
+                                    <h4 className="font-semibold mb-2">{t.reports.analysisSummary}</h4>
+                                    <p className="text-muted-foreground whitespace-pre-wrap">{report.description}</p>
+                                  </div>
+                                </>
+                              )}
 
                               <div>
                                 <h4 className="font-semibold mb-2">{t.reports.recommendations}</h4>

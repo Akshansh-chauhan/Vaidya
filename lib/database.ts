@@ -103,7 +103,7 @@ export async function getHealthData(): Promise<UserData> {
 // Save a health record to Supabase
 export async function saveHealthRecord(record: HealthRecord): Promise<boolean> {
   try {
-    const { error } = await getSupabase().from("health_records").insert({
+    const { error } = await getSupabase().from("health_records").upsert({
       id: record.id,
       user_id: record.userId,
       category: record.category,
@@ -112,7 +112,7 @@ export async function saveHealthRecord(record: HealthRecord): Promise<boolean> {
       file_name: record.fileInfo?.fileName || null,
       file_size: record.fileInfo?.fileSize || null,
       file_type: record.fileInfo?.fileType || null,
-    })
+    }, { onConflict: 'id' })
 
     if (error) {
       console.error("Error saving health record:", error.message)
