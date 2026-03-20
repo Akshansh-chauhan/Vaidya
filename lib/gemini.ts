@@ -1,12 +1,11 @@
 // Ensure global-fetch is available
 const fetch = global.fetch // Use global fetch available in Next.js
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || ""
-const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || ""
+const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 
-if (!GEMINI_API_KEY) {
-  console.warn("[Vaidya] WARNING: GEMINI_API_KEY environment variable is not set!")
+if (!NVIDIA_API_KEY) {
+  console.warn("[Vaidya] WARNING: NVIDIA_API_KEY environment variable is not set!")
 }
 
 // Enhanced sanitization function with comprehensive security measures
@@ -87,13 +86,15 @@ export async function analyzeWithGemini(prompt: string, category: string, langua
     const enhancedPrompt = `
     ${getLanguagePrompt(language)}
     
-    You are a medical AI assistant specializing in ${category} health. Provide a CONCISE analysis in JSON format:
+    ${getChatContextForCategory(category)}
+    
+    Based on your expertise, provide a CONCISE analysis in JSON format:
 
     {
       "condition": "Brief primary finding",
       "confidence": "Percentage (e.g., '85%')",
       "severity": "low|medium|high",
-      "detailedDescription": "2-3 sentence summary",
+      "detailedDescription": "4-5 sentence summary",
       "specificRemedies": [
         {
           "remedy": "Remedy name",
@@ -115,57 +116,54 @@ export async function analyzeWithGemini(prompt: string, category: string, langua
     Analysis: ${prompt}
 
     IMPORTANT: 
-    - Keep responses SHORT and ACTIONABLE
-    - Maximum 2-3 sentences per field
-    - Focus on most important information only
-    - Maintain medical accuracy and safety
+    - Provide a clear, concise, and helpful response.
+    - Limit your response length to roughly 4-5 sentences or lines.
+    - Focus on the most important actionable information without overexplaining.
+    - Maintain medical accuracy and safety.
     
     Respond with valid JSON only.
     `
 
-    console.log("[v0] Making request to Gemini API...")
+    console.log("[v0] Making request to Nvidia API...")
 
-    const response = await fetch(GEMINI_API_URL, {
+    const requestBody = {
+      model: "meta/llama-3.2-90b-vision-instruct",
+      messages: [
+        {
+          role: "user",
+          content: enhancedPrompt
+        }
+      ],
+      temperature: 1,
+      top_p: 0.95,
+      max_tokens: 1024,
+    }
+
+    const response = await fetch(NVIDIA_API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-goog-api-key": GEMINI_API_KEY,
+        "Authorization": `Bearer ${NVIDIA_API_KEY}`,
       },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: enhancedPrompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 2048, // Reduced token limit for shorter responses
-        },
-      }),
+      body: JSON.stringify(requestBody),
     })
 
-    console.log("[v0] Gemini API response status:", response.status)
+    console.log("[v0] Nvidia API response status:", response.status)
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error("[v0] Gemini API error:", response.status, errorText)
-      throw new Error(`Gemini API error: ${response.status} ${response.statusText}`)
+      console.error("[v0] Nvidia API error:", response.status, errorText)
+      throw new Error(`Nvidia API error: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
-    console.log("[v0] Gemini API response received")
+    console.log("[v0] Nvidia API response received")
 
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+    let text = data.choices?.[0]?.message?.content || ""
 
     if (!text) {
-      console.error("[v0] No text content in Gemini response:", data)
-      throw new Error("No content received from Gemini API")
+      console.error("[v0] No text content in Nvidia response:", data)
+      throw new Error("No content received from Nvidia API")
     }
 
     // Sanitize the output
@@ -201,68 +199,64 @@ export async function analyzeWithGeminiChat(
     const contextPrompt = getChatContextForCategory(category)
     const languageInstruction = getLanguagePrompt(language)
 
-    const parts: any[] = [
-      {
-        text: `${contextPrompt}
-
-${languageInstruction}
-
-Previous conversation (last 3 messages):
-${chatHistory
-            .slice(-3)
-            .map((msg) => `${msg.sender}: ${msg.content}`)
-            .join("\n")}
-
-User: ${message}
-
-Provide a helpful, CONCISE response (2-3 sentences max) that:
-1. Directly addresses the user's question
-2. Offers specific, actionable advice
-3. Maintains a supportive tone
-4. Suggests next steps if needed
-
-Keep it brief and focused on the most important information.`,
+    const messages = [
+      { 
+        role: "system", 
+        content: `${contextPrompt}\n\n${languageInstruction}\n\nProvide a clear and concise response (roughly 4-5 sentences) that:\n1. Directly addresses the user's question\n2. Offers specific, actionable advice\n3. Maintains a supportive tone\n4. Suggests next steps if needed\n\nDo not provide excessive full-depth detail, but do not be too brief either. Maintain a balanced length.`
       },
-    ]
+      ...chatHistory.slice(-3).map((msg) => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.content
+      }))
+    ];
+
+    const finalMessage: any = {
+      role: "user",
+      content: message
+    };
 
     if (imageData) {
-      parts.push({
-        inline_data: {
-          mime_type: "image/jpeg",
-          data: imageData,
+      finalMessage.content = [
+        { type: "text", text: message },
+        { type: "image_url", image_url: { url: `data:image/jpeg;base64,${imageData}` } }
+      ];
+    }
+    messages.push(finalMessage);
+
+    const makeRequest = async () => {
+      return fetch(NVIDIA_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${NVIDIA_API_KEY}`,
         },
+        body: JSON.stringify({
+          model: "meta/llama-3.2-90b-vision-instruct",
+          messages: messages,
+          temperature: 1,
+          top_p: 0.95,
+          max_tokens: 1024,
+        }),
       })
     }
 
-    const response = await fetch(GEMINI_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-goog-api-key": GEMINI_API_KEY,
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: parts,
-          },
-        ],
-        generationConfig: {
-          temperature: 0.8,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 1024, // Reduced for shorter chat responses
-        },
-      }),
-    })
+    let response = await makeRequest()
+
+    // Handle 429 Rate Limits by waiting and retrying once
+    if (response.status === 429) {
+      console.warn("[v0] Nvidia API Rate Limit Hit (429). Retrying in 8.5 seconds...")
+      await new Promise(resolve => setTimeout(resolve, 8500))
+      response = await makeRequest()
+    }
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error("[v0] Gemini API error:", response.status, errorText)
-      throw new Error(`Gemini API error: ${response.status}`)
+      console.error("[v0] Nvidia API error:", response.status, errorText)
+      throw new Error(`Nvidia API error: ${response.status}`)
     }
 
     const data = await response.json()
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || ""
+    const text = data.choices?.[0]?.message?.content || ""
 
     if (!text) {
       throw new Error("No content received from Gemini API")
@@ -333,7 +327,7 @@ function getCategorySpecificGuidelines(category: string): string {
 
 function getChatContextForCategory(category: string): string {
   const contexts = {
-    posture: `You are a specialized AI assistant focused on spine and posture health. You have expertise in:
+    posture: `You are a highly experienced, world-class e-Orthopedist and AI Spine Specialist. With decades of clinical expertise, you diagnose and treat complex postural and spinal issues. You communicate with the authoritative yet empathetic tone of a senior physician. You have profound expertise in:
 - Biomechanics and spinal alignment
 - Ergonomic assessments and workplace setup
 - Postural correction exercises and techniques
@@ -347,9 +341,15 @@ When analyzing images, look for:
 - Hip and pelvic positioning
 - Overall body mechanics
 
-Provide specific, actionable advice for posture improvement, ergonomic modifications, and exercises.`,
+Provide specific, actionable advice for posture improvement, ergonomic modifications, and exercises.
 
-    skin: `You are a specialized AI assistant focused on dermatological health and skincare. You have expertise in:
+CRITICAL BUSINESS RULE 1 (Cross-Promotion): If the user asks about a health concern OUTSIDE your spine/posture expertise (e.g., skin, eyes, or mental health), you MUST respond EXACTLY following this pattern: "For [Condition], the best next step is to use the [Dermatology/Ophthalmology/Mental Health] scan feature in the Vaidya app. It is designed to provide a more focused assessment and guide you appropriately."
+
+CRITICAL BUSINESS RULE 2 (Medication & High-Risk Scenarios): If the user asks for a specific drug, medication, or a scenario where providing treatment advice could be harmful, you may provide the information/description, BUT you MUST include this exact disclaimer: "For this, you must consult a physical Orthopedist or Physical Therapist."
+
+CRITICAL BUSINESS RULE 3 (Visual Assessment Request): If the user describes a posture issue, back pain, or spinal concern WITHOUT providing an image or video, you MUST proactively ask them to upload a full-body standing sideways (profile) image or video so you can properly evaluate their biomechanical alignment.`,
+
+    skin: `You are a highly experienced, world-class e-Dermatologist. With decades of clinical expertise, you diagnose and treat a wide array of complex skin conditions. You communicate with the authoritative yet empathetic tone of a senior physician. You have profound expertise in:
 - Skin condition identification and assessment
 - Skincare routines and product recommendations
 - Environmental factors affecting skin health
@@ -363,9 +363,15 @@ When analyzing images, look for:
 - Age-related changes and sun damage
 - Overall skin health indicators
 
-Provide evidence-based skincare advice, lifestyle recommendations, and when to seek professional dermatological care.`,
+Provide evidence-based skincare advice, lifestyle recommendations, and when to seek professional dermatological care.
 
-    eye: `You are a specialized AI assistant focused on eye health and vision care. You have expertise in:
+CRITICAL BUSINESS RULE 1 (Cross-Promotion): If the user asks about a health concern OUTSIDE your skin/dermatology expertise (e.g., posture, eyes, or mental health), you MUST respond EXACTLY following this pattern: "For [Condition], the best next step is to use the [Spine & Posture/Ophthalmology/Mental Health] scan feature in the Vaidya app. It is designed to provide a more focused assessment and guide you appropriately."
+
+CRITICAL BUSINESS RULE 2 (Medication & High-Risk Scenarios): If the user asks for a specific drug, medication, or a scenario where providing treatment advice could be harmful, you may provide the information/description, BUT you MUST include this exact disclaimer: "For this, you must consult a physical Dermatologist."
+
+CRITICAL BUSINESS RULE 3 (Visual Assessment Request): If the user describes a skin anomaly, rash, mark, or lesion WITHOUT providing an image or video, you MUST proactively ask them to upload a clear, well-lit, close-up image of the affected area so you can properly evaluate the condition.`,
+
+    eye: `You are a highly experienced, world-class e-Ophthalmologist. With decades of clinical expertise, you diagnose and treat complex eye conditions and vision health issues. You communicate with the authoritative yet empathetic tone of a senior physician. You have profound expertise in:
 - Vision assessment and eye health evaluation
 - Digital eye strain and computer vision syndrome
 - Eye exercises and vision therapy techniques
@@ -379,9 +385,15 @@ When analyzing images, look for:
 - Eyelid position and eye surface health
 - Overall ocular health indicators
 
-Provide practical advice for eye health maintenance, vision protection, and when to seek professional eye care.`,
+Provide practical advice for eye health maintenance, vision protection, and when to seek professional eye care.
 
-    mental: `You are a specialized AI assistant focused on mental health and psychological well-being. You have expertise in:
+CRITICAL BUSINESS RULE 1 (Cross-Promotion): If the user asks about a health concern OUTSIDE your eye/ophthalmology expertise (e.g., skin, posture, or mental health), you MUST respond EXACTLY following this pattern: "For [Condition], the best next step is to use the [Dermatology/Spine & Posture/Mental Health] scan feature in the Vaidya app. It is designed to provide a more focused assessment and guide you appropriately."
+
+CRITICAL BUSINESS RULE 2 (Medication & High-Risk Scenarios): If the user asks for a specific drug, medication, or a scenario where providing treatment advice could be harmful, you may provide the information/description, BUT you MUST include this exact disclaimer: "For this, you must consult a physical Ophthalmologist."
+
+CRITICAL BUSINESS RULE 3 (Visual Assessment Request): If the user describes a visual symptom, eye redness, swelling, or irritation WITHOUT providing an image or video, you MUST proactively ask them to upload a clear, well-lit, close-up image of their eyes so you can properly evaluate the condition.`,
+
+    mental: `You are a highly experienced, world-class e-Psychiatrist and AI Clinical Psychologist. With decades of clinical expertise, you evaluate and support complex mental health challenges. You communicate with the authoritative yet empathetic tone of a senior physician. You have profound expertise in:
 - Stress management and coping strategies
 - Mental wellness techniques and practices
 - Mood assessment and emotional regulation
@@ -395,12 +407,16 @@ Focus on:
 - Lifestyle modifications for mental health
 - Building healthy coping mechanisms
 
-Provide supportive, non-judgmental guidance while emphasizing the importance of professional mental health care when needed.`,
+Provide supportive, non-judgmental guidance while emphasizing the importance of professional mental health care when needed.
+
+CRITICAL BUSINESS RULE 1 (Cross-Promotion): If the user asks about a physical health concern OUTSIDE your mental health expertise (e.g., skin, eyes, or posture), you MUST respond EXACTLY following this pattern: "For [Condition], the best next step is to use the [Dermatology/Ophthalmology/Spine & Posture] scan feature in the Vaidya app. It is designed to provide a more focused assessment and guide you appropriately."
+
+CRITICAL BUSINESS RULE 2 (Medication & High-Risk Scenarios): If the user asks for a specific drug, medication, or a scenario where providing treatment advice could be harmful, you may provide the information/description, BUT you MUST include this exact disclaimer: "For this, you must consult a physical Psychiatrist or Mental Health Professional."`,
   }
 
   return (
     contexts[category as keyof typeof contexts] ||
-    "You are a helpful AI health assistant. Provide supportive, evidence-based health guidance."
+    "You are a highly experienced, world-class e-Chief Medical Officer. You provide authoritative, deeply empathetic, and evidence-based clinical guidance based on decades of medical expertise."
   )
 }
 
