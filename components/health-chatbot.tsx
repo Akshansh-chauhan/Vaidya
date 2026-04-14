@@ -5,7 +5,6 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send, Mic, MicOff, Volume2, VolumeX, Upload, Bot, User, FileText, Loader2, Globe, ChevronDown, Check, Sparkles, X } from "lucide-react"
 import { LANGUAGE_NAMES, type Language } from "@/lib/translations"
 import { useLanguage } from "@/lib/use-language"
@@ -119,6 +118,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
   const [isProcessingSTT, setIsProcessingSTT] = useState(false)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -417,21 +417,21 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
       {/* Chat container — glass card */}
       <div className="glass-card flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-zinc-100/80">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-zinc-900 rounded-xl flex items-center justify-center shadow-sm">
-                <Sparkles className="w-4 h-4 text-white" />
+        <div className="px-4 sm:px-6 py-4 border-b border-zinc-100/80">
+          <div className="flex items-start sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="w-11 h-11 sm:w-9 sm:h-9 bg-zinc-900 rounded-2xl sm:rounded-xl flex items-center justify-center shadow-sm flex-shrink-0 mt-0.5 sm:mt-0">
+                <Sparkles className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-zinc-900 text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title} Assistant</h3>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-semibold text-zinc-900 text-[15px] sm:text-[15px] leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{title} Assistant</h3>
                   <span className="text-[11px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">AI</span>
                 </div>
-                <p className="text-[12px] text-zinc-400 mt-0.5">{description}</p>
+                <p className="text-[12px] text-zinc-400 mt-0.5 leading-relaxed">{description}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-start sm:items-center gap-2 shrink-0">
               {/* Status indicators */}
               <div className="hidden sm:flex items-center gap-3 mr-2">
                 <div className="flex items-center gap-1.5">
@@ -449,7 +449,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 px-6">
+        <div ref={messagesContainerRef} className="flex-1 px-6 overflow-y-auto no-scrollbar">
           <div className="space-y-5 py-5">
             {messages.map((message) => (
               <div
@@ -512,7 +512,7 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
 
             <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Input area */}
         <div className="px-5 py-4 border-t border-zinc-100/80">

@@ -6,19 +6,42 @@ import { useLanguage } from "@/lib/use-language"
 import { getSubPageTranslations } from "@/lib/sub-translations"
 import { useAuth } from "@/components/auth-provider"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function ScanPage() {
   const [lang] = useLanguage()
   const t = getSubPageTranslations(lang)
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [isNavVisible, setIsNavVisible] = useState(true)
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login")
     }
   }, [user, loading, router])
+
+  useEffect(() => {
+    let lastScrollY = 0
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const isNearTop = currentScrollY < 30
+
+      if (isNearTop) {
+        setIsNavVisible(true)
+      } else if (currentScrollY > lastScrollY + 8) {
+        setIsNavVisible(false)
+      } else if (currentScrollY < lastScrollY - 8) {
+        setIsNavVisible(true)
+      }
+
+      lastScrollY = currentScrollY
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   if (loading || !user) {
     return (
@@ -43,7 +66,11 @@ export default function ScanPage() {
 
       {/* Nav */}
       <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 anim-fade-up">
-        <nav className="nav-glass rounded-full px-3 py-2 flex items-center gap-3">
+        <nav
+          className={`nav-glass rounded-full px-3 py-2 flex items-center gap-3 transition-all duration-300 ${
+            isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0"
+          }`}
+        >
           <Button variant="ghost" size="sm" asChild className="text-zinc-600 hover:text-zinc-900 hover:bg-white/40">
             <Link href="/">
               <ArrowLeft className="w-4 h-4 mr-1.5" />
@@ -99,7 +126,8 @@ export default function ScanPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-5 border-t border-white/40">
+                  {/* Mobile: keep existing row layout */}
+                  <div className="flex items-center justify-between pt-5 border-t border-white/40 md:hidden">
                     <div className="flex gap-4">
                       <span className="flex items-center gap-1.5 text-[13px] text-zinc-400 font-medium">
                         <MessageCircle className="w-3.5 h-3.5" />
@@ -117,6 +145,28 @@ export default function ScanPage() {
                       </Link>
                     </Button>
                   </div>
+
+                  {/* Desktop/tablet: points in one row, button below */}
+                  <div className="hidden md:flex md:flex-col md:items-center pt-3 border-t border-white/40">
+                    <div className="flex items-center justify-center gap-5 text-[13px] text-zinc-400 font-medium whitespace-nowrap">
+                      <span className="flex items-center gap-1.5">
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        {t.scan.aiChat}
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <Brain className="w-3.5 h-3.5" />
+                        {t.scan.voiceText}
+                      </span>
+                    </div>
+                    <div className="mt-7 flex justify-center">
+                      <Button size="sm" asChild className="shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+                        <Link href={category.route}>
+                          {t.scan.startChat}
+                          <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             )
@@ -128,10 +178,18 @@ export default function ScanPage() {
           <h3 className="text-xl font-semibold text-zinc-900 mb-2" style={{ fontFamily: 'var(--font-outfit)' }}>{t.scan.quickAccess}</h3>
           <p className="text-zinc-500 mb-6">{t.scan.quickAccessDesc}</p>
           <div className="flex justify-center gap-3">
-            <Button variant="outline" asChild className="bg-white/60 backdrop-blur-sm border-white/60 hover:bg-white/80">
+            <Button
+              variant="outline"
+              asChild
+              className="bg-white/60 backdrop-blur-sm border-white/60 hover:bg-white/90 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(0,0,0,0.08)] transition-all duration-300"
+            >
               <Link href="/reports">{t.scan.viewReports}</Link>
             </Button>
-            <Button variant="outline" asChild className="bg-white/60 backdrop-blur-sm border-white/60 hover:bg-white/80">
+            <Button
+              variant="outline"
+              asChild
+              className="bg-white/60 backdrop-blur-sm border-white/60 hover:bg-white/90 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(0,0,0,0.08)] transition-all duration-300"
+            >
               <Link href="/plans">{t.scan.getPlans}</Link>
             </Button>
           </div>

@@ -45,7 +45,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex relative overflow-hidden">
       {/* ——— Left Panel: Background Image with glass overlays ——— */}
-      <div className="hidden lg:flex lg:flex-1 relative overflow-hidden items-center justify-center">
+      <div className="hidden md:flex md:flex-1 relative overflow-hidden items-center justify-center">
         {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -92,37 +92,48 @@ export default function LoginPage() {
       </div>
 
       {/* ——— Right Panel: Auth Form ——— */}
-      <div className="flex-1 flex items-center justify-center px-6 bg-[#fafafa] relative">
-        <div className="w-full max-w-[400px]">
-          <div className="text-center mb-10 anim-fade-up">
-            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg">
+      <div className="flex-1 flex items-center justify-center px-5 sm:px-6 py-8 sm:py-0 md:py-6 bg-[#fafafa] relative overflow-hidden">
+        {/* Mobile-only full background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
+          style={{ backgroundImage: "url('/login-bg.png')" }}
+        />
+        <div className="absolute inset-0 bg-black/35 md:hidden" />
+
+        <div className="relative z-10 w-full max-w-[400px] md:max-w-[360px]">
+          <div className="mb-8 sm:mb-10 anim-fade-up flex items-center gap-4 md:flex-col md:gap-0 md:text-center md:mt-4">
+            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center shadow-lg shrink-0 md:mb-5">
               <Activity className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Vaidya</h1>
-            <p className="text-zinc-500 mt-1.5 text-[15px]">Your AI Health Companion</p>
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight text-white md:text-zinc-900" style={{ fontFamily: "var(--font-outfit)" }}>
+                Vaidya
+              </h1>
+              <p className="mt-1.5 text-[15px] text-white/85 md:text-zinc-500">Your AI Health Companion</p>
+            </div>
           </div>
 
-          <div className="card-elevated p-8 sm:p-10 anim-fade-up anim-delay-1">
+          <div className="p-6 sm:p-8 anim-fade-up anim-delay-1 rounded-[28px] border border-white/26 bg-white/22 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] md:rounded-[24px] md:border-zinc-100 md:bg-white md:backdrop-blur-0 md:shadow-[0_8px_30px_rgba(0,0,0,0.08)]">
             <div className="text-center mb-8">
               <h2 className="text-xl font-semibold text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>
                 {isSignUp ? "Create Account" : "Welcome Back"}
               </h2>
-              <p className="text-zinc-500 text-[15px] mt-1.5">
+              <p className="text-zinc-700 md:text-zinc-500 text-[15px] mt-1.5">
                 {isSignUp ? "Sign up to start your health journey" : "Sign in to access your health dashboard"}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700 ml-0.5">Email</label>
+                <label className="text-sm font-medium text-zinc-800 md:text-zinc-700 ml-0.5">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400 w-4 h-4" />
+                  <Mail className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-500 md:text-zinc-400 w-4 h-4" />
                   <Input
                     type="email"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 bg-zinc-50 border-zinc-200 text-zinc-900 placeholder:text-zinc-400 rounded-xl h-12 focus:border-zinc-400 focus:ring-zinc-200 transition-all"
+                    className="pl-10 bg-white/75 md:bg-zinc-50 border-zinc-300 md:border-zinc-200 text-zinc-900 placeholder:text-zinc-500 md:placeholder:text-zinc-400 rounded-xl h-12 focus:border-zinc-400 focus:ring-zinc-200 transition-all"
                     required
                     disabled={loading}
                   />
@@ -130,15 +141,15 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-zinc-700 ml-0.5">Password</label>
+                <label className="text-sm font-medium text-zinc-800 md:text-zinc-700 ml-0.5">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400 w-4 h-4" />
+                  <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-500 md:text-zinc-400 w-4 h-4" />
                   <Input
                     type="password"
                     placeholder="Min 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-zinc-50 border-zinc-200 text-zinc-900 placeholder:text-zinc-400 rounded-xl h-12 focus:border-zinc-400 focus:ring-zinc-200 transition-all"
+                    className="pl-10 bg-white/75 md:bg-zinc-50 border-zinc-300 md:border-zinc-200 text-zinc-900 placeholder:text-zinc-500 md:placeholder:text-zinc-400 rounded-xl h-12 focus:border-zinc-400 focus:ring-zinc-200 transition-all"
                     required
                     minLength={6}
                     disabled={loading}
@@ -169,7 +180,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setIsSignUp(!isSignUp); setError(""); setSuccess("") }}
-                className="text-sm text-zinc-500 hover:text-zinc-900 font-medium transition-colors cursor-pointer"
+                className="text-sm text-zinc-700 md:text-zinc-500 hover:text-zinc-900 font-medium transition-colors cursor-pointer"
                 disabled={loading}
               >
                 {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
@@ -177,7 +188,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <p className="text-center text-xs text-zinc-400 mt-8 max-w-xs mx-auto leading-relaxed">
+          <p className="text-center text-xs text-white md:text-zinc-400 mt-8 max-w-xs mx-auto leading-relaxed px-4 py-2 rounded-xl bg-black/20 md:bg-transparent md:px-0 md:py-0">
             By continuing, you agree to use Vaidya for informational purposes only.
             <br />Always consult a healthcare professional for medical advice.
           </p>

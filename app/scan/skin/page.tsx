@@ -7,19 +7,42 @@ import { useLanguage } from "@/lib/use-language"
 import { getSubPageTranslations } from "@/lib/sub-translations"
 import { useAuth } from "@/components/auth-provider"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function SkinScanPage() {
   const [lang] = useLanguage()
   const t = getSubPageTranslations(lang)
   const { user, loading } = useAuth()
   const router = useRouter()
+  const [isNavVisible, setIsNavVisible] = useState(true)
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login")
     }
   }, [user, loading, router])
+
+  useEffect(() => {
+    let lastScrollY = 0
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const isNearTop = currentScrollY < 30
+
+      if (isNearTop) {
+        setIsNavVisible(true)
+      } else if (currentScrollY > lastScrollY + 8) {
+        setIsNavVisible(false)
+      } else if (currentScrollY < lastScrollY - 8) {
+        setIsNavVisible(true)
+      }
+
+      lastScrollY = currentScrollY
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   if (loading || !user) {
     return (
@@ -32,7 +55,11 @@ export default function SkinScanPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <div className="fixed top-0 left-0 right-0 z-50">
-        <nav className="nav-glass mx-4 mt-4 rounded-full px-3 py-2 flex items-center gap-3 max-w-5xl lg:mx-auto">
+        <nav
+          className={`nav-glass mx-4 mt-4 rounded-full px-3 py-2 flex items-center gap-3 max-w-5xl lg:mx-auto transition-all duration-300 ${
+            isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0"
+          }`}
+        >
           <Button variant="ghost" size="sm" asChild className="text-zinc-600 hover:text-zinc-900 hover:bg-white/50">
             <Link href="/scan">
               <ArrowLeft className="w-4 h-4 mr-1.5" />
