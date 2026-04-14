@@ -1,10 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { analyzeWithGeminiChat } from "@/lib/gemini"
 import { saveHealthRecord } from "@/lib/database"
-import { getAuthUserId } from "@/lib/auth"
+import { getAuthContext } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getAuthContext(request)
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const formData = await request.formData()
     const message = formData.get("message") as string
     const chatHistoryStr = formData.get("chatHistory") as string
@@ -36,13 +41,11 @@ export async function POST(request: NextRequest) {
       language,
     )
 
-    const userId = await getAuthUserId(request)
-
     // Save to Supabase
     try {
       await saveHealthRecord({
         id: sessionId || `eye-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-        userId,
+        userId: auth.userId,
         category: "eye",
         analysis: {
           userMessage: message || "Image uploaded for eye assessment",
@@ -62,7 +65,7 @@ export async function POST(request: NextRequest) {
               fileType: file.type,
             }
           : undefined,
-      })
+      }, auth.accessToken)
     } catch (dbError) {
       console.error("Failed to save eye record:", dbError)
     }

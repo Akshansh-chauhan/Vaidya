@@ -1,16 +1,15 @@
 "use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Brain } from "lucide-react"
+import { ArrowLeft, Brain, Activity } from "lucide-react"
 import HealthChatbot from "@/components/health-chatbot"
 import { useLanguage } from "@/lib/use-language"
 import { getSubPageTranslations } from "@/lib/sub-translations"
 import { useAuth } from "@/components/auth-provider"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { Loader2 } from "lucide-react"
 
-export default function MentalHealthPage() {
+export default function MentalScanPage() {
   const [lang] = useLanguage()
   const t = getSubPageTranslations(lang)
   const { user, loading } = useAuth()
@@ -24,41 +23,42 @@ export default function MentalHealthPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
+        <div className="w-10 h-10 rounded-2xl bg-zinc-200 animate-pulse" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card/30 to-background">
-      <nav className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/scan">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t.common.backScan}
-                </Link>
-              </Button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="text-xl font-bold text-foreground">Vaidya</span>
-              </div>
+    <div className="min-h-screen bg-[#fafafa]">
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <nav className="nav-glass mx-4 mt-4 rounded-full px-3 py-2 flex items-center gap-3 max-w-5xl lg:mx-auto">
+          <Button variant="ghost" size="sm" asChild className="text-zinc-600 hover:text-zinc-900 hover:bg-white/50">
+            <Link href="/scan">
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              {t.common.backScan}
+            </Link>
+          </Button>
+          <div className="w-px h-5 bg-zinc-200/60" />
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-zinc-900 rounded-md flex items-center justify-center">
+              <Activity className="w-3.5 h-3.5 text-white" />
             </div>
-          </div>
-        </div>
-      </nav>
+            <span className="text-[15px] font-bold text-zinc-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Vaidya</span>
+          </Link>
+        </nav>
+      </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">{t.scanPages.mental.title}</h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">{t.scanPages.mental.desc}</p>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-8">
+        <div className="text-center mb-6 anim-fade-up">
+          <div className="inline-flex items-center gap-2 glass-card !rounded-full px-4 py-2 !shadow-sm text-sm font-medium text-amber-600 mb-4">
+            <Brain className="w-4 h-4" />
+            AI-Powered Analysis
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-semibold text-zinc-900 tracking-tight mb-2" style={{ fontFamily: 'var(--font-outfit)' }}>{t.scanPages.mental.title}</h1>
+          <p className="text-zinc-500 max-w-2xl mx-auto">{t.scanPages.mental.desc}</p>
         </div>
-        <HealthChatbot scanType="mental" title={t.scanPages.mental.title} description={t.scanPages.mental.chatDesc} acceptedFiles="audio/*" />
+        <HealthChatbot scanType="mental" title={t.scanPages.mental.title} description={t.scanPages.mental.chatDesc} acceptedFiles="image/*" />
       </div>
     </div>
   )

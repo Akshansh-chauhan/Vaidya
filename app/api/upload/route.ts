@@ -1,7 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
+import { getAuthContext } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
+    if (!(await getAuthContext(request))) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
+
     const formData = await request.formData()
     const file = formData.get("file") as File
     const category = formData.get("category") as string

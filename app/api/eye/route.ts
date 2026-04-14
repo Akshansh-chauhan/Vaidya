@@ -1,11 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { analyzeWithGemini } from "@/lib/gemini"
 import { saveHealthRecord } from "@/lib/database"
+import { getAuthContext } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getAuthContext(request)
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await request.json()
-    const { fileId, analysisData, userId = "default" } = body
+    const { fileId, analysisData } = body
 
     const prompt = `
     Analyze eye health data for comprehensive assessment. Consider:
@@ -23,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const healthRecord = {
       id: `eye_${Date.now()}`,
-      userId,
+      userId: auth.userId,
       category: "eye" as const,
       analysis,
       timestamp: new Date().toISOString(),
@@ -36,7 +42,7 @@ export async function POST(request: NextRequest) {
         : undefined,
     }
 
-    const saved = await saveHealthRecord(healthRecord)
+    const saved = await saveHealthRecord(healthRecord, auth.accessToken)
 
     return NextResponse.json({
       success: true,

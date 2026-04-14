@@ -4,12 +4,9 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Send, Mic, MicOff, Volume2, VolumeX, Upload, Bot, User, FileText, Loader2, Globe, ChevronDown, Check } from "lucide-react"
+import { Send, Mic, MicOff, Volume2, VolumeX, Upload, Bot, User, FileText, Loader2, Globe, ChevronDown, Check, Sparkles, X } from "lucide-react"
 import { LANGUAGE_NAMES, type Language } from "@/lib/translations"
 import { useLanguage } from "@/lib/use-language"
 import { useAuth } from "@/components/auth-provider"
@@ -70,18 +67,18 @@ function ChatLanguagePicker({ lang, onSwitch }: { lang: Language; onSwitch: (l: 
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 border border-border rounded-md px-2.5 py-1 bg-transparent hover:bg-secondary/50 transition-colors text-sm font-medium cursor-pointer"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-100 hover:bg-zinc-200/70 transition-colors text-[13px] font-medium text-zinc-600 cursor-pointer"
       >
-        <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-        <span className="text-xs">{LANGUAGE_NAMES[lang]}</span>
-        <ChevronDown className={`h-3 w-3 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
+        <Globe className="h-3.5 w-3.5 text-zinc-400" />
+        <span>{LANGUAGE_NAMES[lang]}</span>
+        <ChevronDown className={`h-3 w-3 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-40 bg-card border border-border rounded-lg shadow-lg z-[100] overflow-hidden">
+        <div className="absolute right-0 mt-2 w-44 bg-white/90 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.1)] border border-zinc-100 z-[100] overflow-hidden p-1.5">
           <div
             ref={listRef}
             onScroll={handleScroll}
-            className="chat-lang-scroll py-1 max-h-48 overflow-y-auto"
+            className="chat-lang-scroll max-h-48 overflow-y-auto"
             style={{ scrollbarWidth: "none" }}
           >
             <style>{`.chat-lang-scroll::-webkit-scrollbar { display: none; }`}</style>
@@ -89,17 +86,17 @@ function ChatLanguagePicker({ lang, onSwitch }: { lang: Language; onSwitch: (l: 
               <button
                 key={code}
                 onClick={() => { onSwitch(code); setOpen(false) }}
-                className={`w-full text-left px-3 py-1.5 text-sm flex items-center justify-between hover:bg-secondary/60 transition-colors ${lang === code ? "bg-secondary/40 font-medium" : ""
+                className={`w-full text-left px-3 py-2 text-sm flex items-center justify-between rounded-xl transition-colors cursor-pointer ${lang === code ? "bg-zinc-900 text-white font-medium" : "text-zinc-600 hover:bg-zinc-50"
                   }`}
               >
                 {LANGUAGE_NAMES[code]}
-                {lang === code && <Check className="w-3 h-3 text-primary" />}
+                {lang === code && <Check className="w-3 h-3" />}
               </button>
             ))}
           </div>
           {showScrollHint && (
-            <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-0.5 pt-3 bg-gradient-to-t from-card via-card/90 to-transparent pointer-events-none">
-              <ChevronDown className="w-3.5 h-3.5 text-muted-foreground animate-bounce" />
+            <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center pb-0.5 pt-3 bg-gradient-to-t from-white/90 to-transparent pointer-events-none">
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-400 animate-bounce" />
             </div>
           )}
         </div>
@@ -416,163 +413,191 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
   }, [messages])
 
   return (
-    <div className="flex flex-col h-[600px] max-w-4xl mx-auto">
-      <Card className="flex-1 flex flex-col">
-        <CardHeader className="pb-4">
+    <div className="flex flex-col h-[650px] max-w-4xl mx-auto anim-fade-up anim-delay-1">
+      {/* Chat container — glass card */}
+      <div className="glass-card flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-zinc-100/80">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center space-x-2">
-              <Bot className="w-6 h-6 text-primary" />
-              <span>{title} Assistant</span>
-              <Badge variant="secondary" className="ml-2">
-                AI Powered
-              </Badge>
-            </CardTitle>
-            <ChatLanguagePicker lang={currentLanguage as Language} onSwitch={(l) => setCurrentLanguage(l)} />
-          </div>
-          <p className="text-sm text-muted-foreground">{description}</p>
-          <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-            <div className="flex items-center space-x-1">
-              <Volume2 className="w-3 h-3" />
-              <span>Voice Output: {isSpeaking ? "Speaking..." : "Ready"}</span>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-zinc-900 rounded-xl flex items-center justify-center shadow-sm">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-zinc-900 text-[15px]" style={{ fontFamily: 'var(--font-outfit)' }}>{title} Assistant</h3>
+                  <span className="text-[11px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">AI</span>
+                </div>
+                <p className="text-[12px] text-zinc-400 mt-0.5">{description}</p>
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <Mic className="w-3 h-3" />
-              <span>Voice Input: {isRecording ? "Listening..." : isProcessingSTT ? "Processing..." : "Ready"}</span>
+            <div className="flex items-center gap-2">
+              {/* Status indicators */}
+              <div className="hidden sm:flex items-center gap-3 mr-2">
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-1.5 h-1.5 rounded-full ${isSpeaking ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-300'}`} />
+                  <span className="text-[11px] text-zinc-400 font-medium">Voice</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className={`w-1.5 h-1.5 rounded-full ${isRecording ? 'bg-red-400 animate-pulse' : 'bg-zinc-300'}`} />
+                  <span className="text-[11px] text-zinc-400 font-medium">Mic</span>
+                </div>
+              </div>
+              <ChatLanguagePicker lang={currentLanguage as Language} onSwitch={(l) => setCurrentLanguage(l)} />
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 px-4">
-            <div className="space-y-4 pb-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex items-start space-x-3 ${message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+        {/* Messages */}
+        <ScrollArea className="flex-1 px-6">
+          <div className="space-y-5 py-5">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex items-end gap-2.5 ${message.sender === "user" ? "flex-row-reverse" : ""}`}
+              >
+                {/* Avatar */}
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
+                  message.sender === "user"
+                    ? "bg-zinc-900 shadow-sm"
+                    : "bg-zinc-100"
+                }`}>
+                  {message.sender === "user" 
+                    ? <User className="w-3.5 h-3.5 text-white" />
+                    : <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
+                  }
+                </div>
+
+                {/* Message bubble */}
+                <div className={`flex-1 max-w-[80%] ${message.sender === "user" ? "text-right" : ""}`}>
+                  <div
+                    className={`inline-block rounded-2xl px-4 py-3 text-[14px] leading-relaxed ${
+                      message.sender === "user"
+                        ? "bg-zinc-900 text-white rounded-br-md"
+                        : "bg-zinc-100 text-zinc-700 rounded-bl-md"
                     }`}
-                >
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback
-                      className={message.sender === "user" ? "bg-primary text-primary-foreground" : "bg-secondary"}
-                    >
-                      {message.sender === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                    </AvatarFallback>
-                  </Avatar>
-
-                  <div className={`flex-1 max-w-[80%] ${message.sender === "user" ? "text-right" : ""}`}>
-                    <div
-                      className={`rounded-lg px-4 py-2 ${message.sender === "user" ? "bg-primary text-primary-foreground ml-auto" : "bg-muted"
-                        }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-xs text-muted-foreground">{message.timestamp.toLocaleTimeString()}</p>
-                      {message.sender === "bot" && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => isSpeaking ? stopSpeaking() : speakText(message.content)}
-                          className="h-6 w-6 p-0"
-                        >
-                          {isSpeaking ? <VolumeX className="w-3 h-3" /> : <Volume2 className="w-3 h-3" />}
-                        </Button>
-                      )}
-                    </div>
+                  >
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                  <div className={`flex items-center gap-2 mt-1 ${message.sender === "user" ? "justify-end" : ""}`}>
+                    <p className="text-[11px] text-zinc-400">{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    {message.sender === "bot" && (
+                      <button
+                        onClick={() => isSpeaking ? stopSpeaking() : speakText(message.content)}
+                        className="text-zinc-400 hover:text-zinc-600 transition-colors cursor-pointer p-0.5"
+                      >
+                        {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
 
-              {isAnalyzing && (
-                <div className="flex items-start space-x-3">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback className="bg-secondary">
-                      <Bot className="w-4 h-4 animate-pulse" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="bg-muted rounded-lg px-4 py-2">
-                    <p className="text-sm flex items-center">
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Analyzing your input...
-                    </p>
+            {/* Typing indicator */}
+            {isAnalyzing && (
+              <div className="flex items-end gap-2.5">
+                <div className="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-3.5 h-3.5 text-zinc-500 animate-pulse" />
+                </div>
+                <div className="bg-zinc-100 rounded-2xl rounded-bl-md px-5 py-3">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-
-          <div className="border-t p-4 space-y-3">
-            {uploadedFile && (
-              <div className="flex items-center space-x-2 p-2 bg-muted rounded-lg">
-                <FileText className="w-4 h-4" />
-                <span className="text-sm flex-1">{uploadedFile.name}</span>
-                <Button size="sm" variant="ghost" onClick={() => setUploadedFile(null)}>
-                  ×
-                </Button>
               </div>
             )}
 
-            <div className="flex items-center space-x-2">
-              <div className="flex space-x-1">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.bmp,.webp"
-                  onChange={handleFileUpload}
-                  className="hidden"
-                />
-                <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                  <Upload className="w-4 h-4" />
-                </Button>
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
 
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={isRecording ? "bg-red-100 text-red-600" : ""}
-                  disabled={isProcessingSTT}
-                >
-                  {isProcessingSTT ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : isRecording ? (
-                    <MicOff className="w-4 h-4" />
-                  ) : (
-                    <Mic className="w-4 h-4" />
-                  )}
-                </Button>
+        {/* Input area */}
+        <div className="px-5 py-4 border-t border-zinc-100/80">
+          {/* Uploaded file indicator */}
+          {uploadedFile && (
+            <div className="flex items-center gap-2 mb-3 px-3 py-2.5 bg-blue-50 rounded-xl border border-blue-100">
+              <FileText className="w-4 h-4 text-blue-500 flex-shrink-0" />
+              <span className="text-sm text-blue-700 font-medium flex-1 truncate">{uploadedFile.name}</span>
+              <button onClick={() => setUploadedFile(null)} className="text-blue-400 hover:text-blue-600 cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
 
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={isSpeaking ? stopSpeaking : () => { }}
-                  disabled={!isSpeaking}
-                >
-                  {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </Button>
-              </div>
+          <div className="flex items-center gap-2">
+            {/* Action buttons */}
+            <div className="flex gap-1">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.bmp,.webp"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-9 h-9 rounded-xl bg-zinc-100 hover:bg-zinc-200/70 flex items-center justify-center text-zinc-500 hover:text-zinc-700 transition-colors cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+              </button>
 
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isProcessingSTT}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                  isRecording
+                    ? "bg-red-100 text-red-500 animate-pulse"
+                    : "bg-zinc-100 hover:bg-zinc-200/70 text-zinc-500 hover:text-zinc-700"
+                }`}
+              >
+                {isProcessingSTT ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isRecording ? (
+                  <MicOff className="w-4 h-4" />
+                ) : (
+                  <Mic className="w-4 h-4" />
+                )}
+              </button>
+
+              <button
+                onClick={isSpeaking ? stopSpeaking : () => { }}
+                disabled={!isSpeaking}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors cursor-pointer ${
+                  isSpeaking
+                    ? "bg-emerald-100 text-emerald-600"
+                    : "bg-zinc-100 text-zinc-400"
+                }`}
+              >
+                {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Text input */}
+            <div className="flex-1 relative">
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message, upload an image, or use voice input..."
-                className="flex-1"
+                className="bg-zinc-50 border-zinc-200 rounded-xl h-11 text-[14px] text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-zinc-200 pr-12"
                 disabled={isAnalyzing}
               />
-
-              <Button
-                onClick={handleSendMessage}
-                disabled={(!inputMessage.trim() && !uploadedFile) || isAnalyzing}
-                size="sm"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
             </div>
+
+            {/* Send button */}
+            <button
+              onClick={handleSendMessage}
+              disabled={(!inputMessage.trim() && !uploadedFile) || isAnalyzing}
+              className="w-10 h-10 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-sm active:scale-95"
+            >
+              <Send className="w-4 h-4" />
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

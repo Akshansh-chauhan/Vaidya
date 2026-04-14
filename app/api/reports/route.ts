@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getUserHealthRecords } from "@/lib/database"
-import { getAuthUserId } from "@/lib/auth"
+import { getAuthContext } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await getAuthUserId(request)
-    const records = await getUserHealthRecords(userId)
+    const auth = await getAuthContext(request)
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const records = await getUserHealthRecords(auth.userId, auth.accessToken)
 
     // Transform database records into the HealthReport format the frontend expects
     const reports = records.map((record) => ({

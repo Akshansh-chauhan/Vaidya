@@ -4,146 +4,79 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated to ancient/vintage medical theme with warm earth tones */
-  --background: #d9cbae;
-  /* Parchment beige background */
-  --foreground: #1f2937;
-  /* Dark text for readability */
-  --card: #e6d7b3;
-  /* Soft terracotta card background */
-  --card-foreground: #1f2937;
-  /* Dark text on cards */
+  --background: #fafafa;
+  --foreground: #18181b;
+  --card: #ffffff;
+  --card-foreground: #18181b;
   --popover: #ffffff;
-  /* White popover for contrast */
-  --popover-foreground: #475569;
-  /* Gray text in popovers */
-  --primary: #a67b4d;
-  /* Bronze primary color */
-  --primary-foreground: #ffffff;
-  /* White text on primary */
-  --secondary: #c2b59b;
-  /* Sage green secondary */
-  --secondary-foreground: #1f2937;
-  /* Dark text on secondary */
-  --muted: #e6d7b3;
-  /* Muted terracotta */
-  --muted-foreground: #6b7280;
-  /* Gray muted text */
-  --accent: #a67b4d;
-  /* Bronze accent */
-  --accent-foreground: #ffffff;
-  /* White text on accent */
-  --destructive: #be123c;
-  /* Red for destructive actions */
-  --destructive-foreground: #ffffff;
-  /* White text on destructive */
-  --border: #bfae8c;
-  /* Light brown border */
-  --input: #ffffff;
-  /* White input background */
-  --ring: #a67b4d;
-  /* Bronze focus ring */
-  --chart-1: #c2b59b;
-  /* Sage green chart */
-  --chart-2: #d9cbae;
-  /* Parchment chart */
-  --chart-3: #e6d7b3;
-  /* Terracotta chart */
-  --chart-4: #a67b4d;
-  /* Bronze chart */
-  --chart-5: #bfae8c;
-  /* Light brown chart */
-  --radius: 0.5rem;
-  --sidebar: #d9cbae;
-  /* Parchment sidebar */
-  --sidebar-foreground: #1f2937;
-  /* Dark sidebar text */
-  --sidebar-primary: #c2b59b;
-  /* Sage sidebar primary */
-  --sidebar-primary-foreground: #1f2937;
-  /* Dark sidebar primary text */
-  --sidebar-accent: #a67b4d;
-  /* Bronze sidebar accent */
-  --sidebar-accent-foreground: #ffffff;
-  /* White sidebar accent text */
-  --sidebar-border: #bfae8c;
-  /* Light brown sidebar border */
-  --sidebar-ring: #a67b4d;
-  /* Bronze sidebar focus ring */
+  --popover-foreground: #18181b;
+  --primary: #18181b;
+  --primary-foreground: #fafafa;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #71717a;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --border: #e4e4e7;
+  --input: #e4e4e7;
+  --ring: #18181b;
+  --chart-1: #22c55e;
+  --chart-2: #3b82f6;
+  --chart-3: #a855f7;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  --radius: 0.75rem;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #18181b;
+  --sidebar-primary: #18181b;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-accent-foreground: #18181b;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #18181b;
 }
 
 .dark {
-  /* Updated dark mode to maintain ancient theme with darker earth tones */
-  --background: #2d2520;
-  /* Dark brown background */
-  --foreground: #e6d7b3;
-  /* Light terracotta text */
-  --card: #3a312a;
-  /* Darker brown cards */
-  --card-foreground: #e6d7b3;
-  /* Light terracotta card text */
-  --popover: #3a312a;
-  /* Dark brown popover */
-  --popover-foreground: #e6d7b3;
-  /* Light terracotta popover text */
-  --primary: #d4a574;
-  /* Lighter bronze primary in dark mode */
-  --primary-foreground: #2d2520;
-  /* Dark brown text on primary */
-  --secondary: #c2b59b;
-  /* Sage green secondary remains same */
-  --secondary-foreground: #2d2520;
-  /* Dark brown text on secondary */
-  --muted: #4a3f36;
-  /* Darker muted */
-  --muted-foreground: #9ca3af;
-  /* Light gray muted text */
-  --accent: #d4a574;
-  /* Lighter bronze accent */
-  --accent-foreground: #2d2520;
-  /* Dark brown text on accent */
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --popover: #0a0a0a;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #18181b;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #27272a;
+  --accent-foreground: #fafafa;
   --destructive: #dc2626;
-  /* Red destructive */
-  --destructive-foreground: #ffffff;
-  /* White text on destructive */
-  --border: #4a3f36;
-  /* Dark brown border */
-  --input: #3a312a;
-  /* Dark brown input */
-  --ring: #d4a574;
-  /* Lighter bronze focus ring */
-  --chart-1: #d4a574;
-  /* Lighter bronze chart in dark */
-  --chart-2: #c2b59b;
-  /* Sage green chart */
-  --chart-3: #4a3f36;
-  /* Dark brown chart */
-  --chart-4: #6b5b4f;
-  /* Medium brown chart */
-  --chart-5: #dc2626;
-  /* Red chart */
-  --sidebar: #2d2520;
-  /* Dark brown sidebar */
-  --sidebar-foreground: #e6d7b3;
-  /* Light terracotta sidebar text */
-  --sidebar-primary: #4a3f36;
-  /* Dark brown sidebar primary */
-  --sidebar-primary-foreground: #e6d7b3;
-  /* Light terracotta sidebar primary text */
-  --sidebar-accent: #d4a574;
-  /* Lighter bronze sidebar accent */
-  --sidebar-accent-foreground: #2d2520;
-  /* Dark brown sidebar accent text */
-  --sidebar-border: #4a3f36;
-  /* Dark brown sidebar border */
-  --sidebar-ring: #d4a574;
-  /* Lighter bronze sidebar ring */
+  --destructive-foreground: #fafafa;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #d4d4d8;
+  --chart-1: #22c55e;
+  --chart-2: #3b82f6;
+  --chart-3: #a855f7;
+  --chart-4: #f59e0b;
+  --chart-5: #ef4444;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #fafafa;
+  --sidebar-primary-foreground: #18181b;
+  --sidebar-accent: #27272a;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #d4d4d8;
 }
 
 @theme inline {
-  /* Updated font variables to use Inter and Poppins */
   --font-sans: var(--font-inter);
-  --font-mono: var(--font-poppins);
+  --font-heading: var(--font-outfit);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -186,8 +119,185 @@
   * {
     @apply border-border outline-ring/50;
   }
-
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
   body {
     @apply bg-background text-foreground;
   }
 }
+
+/* ————————————————————————————————
+   Bevel-Inspired Design System
+   ———————————————————————————————— */
+
+/* ——— Rich Hero Background ——— */
+.hero-rich {
+  background:
+    radial-gradient(ellipse 100% 80% at 50% -20%, rgba(139, 92, 246, 0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 80% 10%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 20% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #f0f0f5 0%, #fafafa 40%);
+}
+
+/* ——— Glassmorphism Nav ——— */
+.nav-glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.nav-text-dark button {
+  color: rgba(24, 24, 27, 0.9);
+}
+
+.nav-text-dark button:hover {
+  color: rgba(24, 24, 27, 1);
+}
+
+/* ——— Glass Card (iOS style) ——— */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 8px 32px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 24px 48px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* ——— Glass Card on dark BG ——— */
+.glass-card-dark {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* ——— Solid elevated card ——— */
+.card-elevated {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 24px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-elevated:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    0 20px 48px rgba(0, 0, 0, 0.08);
+}
+
+/* ——— Accent Gradient Backgrounds for sections ——— */
+.bg-mesh-purple {
+  background:
+    radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 30%, rgba(59, 130, 246, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 40%),
+    #fafafa;
+}
+
+.bg-gradient-warm {
+  background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 50%, #e0e7ff 100%);
+}
+
+/* ——— Animated floating orbs ——— */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ——— 3D Tilt perspective card ——— */
+.perspective-card {
+  perspective: 1200px;
+}
+.perspective-card > .tilted {
+  transform: rotateY(-8deg) rotateX(4deg);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.perspective-card:hover > .tilted {
+  transform: rotateY(-3deg) rotateX(2deg);
+}
+
+/* ——— Animations ——— */
+@keyframes fade-up {
+  0% { opacity: 0; transform: translateY(28px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(12px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.anim-fade-up {
+  opacity: 0;
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.3s; }
+.anim-delay-4 { animation-delay: 0.4s; }
+.anim-delay-5 { animation-delay: 0.5s; }
+
+.anim-float { animation: float 6s ease-in-out infinite; }
+.anim-float-reverse { animation: float-reverse 7s ease-in-out infinite; }
+
+/* ——— Scrollbar ——— */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(235, 235, 235, 0.72) rgba(70, 70, 75, 0.75);
+}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track {
+  background: rgba(70, 70, 75, 0.75);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(235, 235, 235, 0.72);
+  border-radius: 8px;
+  border: 1px solid rgba(85, 85, 90, 0.85);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(245, 245, 245, 0.9); }

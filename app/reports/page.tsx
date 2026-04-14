@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { jsPDF } from "jspdf"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -66,9 +65,9 @@ const categoryLabelsDefault: Record<string, string> = {
 }
 
 const severityLabelsDefault: Record<string, string> = {
-  low: "Low",
-  medium: "Medium",
-  high: "High",
+  low: "Good",
+  medium: "Moderate",
+  high: "Attention",
 }
 
 export default function ReportsPage() {
@@ -115,8 +114,8 @@ export default function ReportsPage() {
 
   if (authLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-zinc-300" />
       </div>
     )
   }
@@ -148,7 +147,7 @@ export default function ReportsPage() {
     doc.text("VAIDYA AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' })
 
     // Header strip
-    doc.setFillColor(166, 123, 77) // #a67b4d
+    doc.setFillColor(24, 24, 27) // zinc-900
     doc.rect(0, 0, pageWidth, 40, "F")
 
     doc.setTextColor(255, 255, 255)
@@ -255,7 +254,7 @@ export default function ReportsPage() {
           doc.setTextColor(100, 100, 100)
           doc.text("PATIENT:", margin, y)
         } else {
-          doc.setTextColor(166, 123, 77)
+          doc.setTextColor(24, 24, 27)
           doc.text("VAIDYA AI:", margin, y)
         }
         
@@ -269,7 +268,6 @@ export default function ReportsPage() {
     }
 
     // Footer Pagination
-    // To support older jspdf types
     const pageCount = (doc as any).internal.getNumberOfPages()
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i)
@@ -285,268 +283,194 @@ export default function ReportsPage() {
     doc.save(`Vaidya_Report_${categoryLabelsDefault[report.category]}_${new Date(report.date).toISOString().split('T')[0]}.pdf`)
   }
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityStyle = (severity: string) => {
     switch (severity) {
-      case "high":
-        return "destructive"
-      case "medium":
-        return "default"
-      case "low":
-        return "secondary"
-      default:
-        return "secondary"
+      case "high": return "bg-red-50 text-red-700 border-red-100"
+      case "medium": return "bg-amber-50 text-amber-700 border-amber-100"
+      case "low": return "bg-emerald-50 text-emerald-700 border-emerald-100"
+      default: return "bg-zinc-50 text-zinc-700 border-zinc-100"
     }
   }
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
-      case "high":
-        return AlertCircle
-      case "medium":
-        return Clock
-      case "low":
-        return CheckCircle
-      default:
-        return CheckCircle
+      case "high": return AlertCircle
+      case "medium": return Clock
+      case "low": return CheckCircle
+      default: return CheckCircle
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card/30 to-background">
-      {/* Navigation */}
-      <nav className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t.common.backHome}
-                </Link>
-              </Button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Activity className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="text-xl font-bold text-foreground">Vaidya</span>
-              </div>
-            </div>
-            <Button asChild>
-              <Link href="/scan">{t.common.newScan}</Link>
+    <div className="min-h-screen bg-[#fafafa]">
+      {/* Nav */}
+      <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 anim-fade-up">
+        <nav className="nav-float rounded-full px-3 py-2 flex items-center justify-between w-full max-w-6xl">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" asChild className="text-zinc-500 hover:text-zinc-900">
+              <Link href="/">
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                {t.common.backHome}
+              </Link>
             </Button>
+            <div className="w-px h-5 bg-zinc-200" />
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-zinc-900 rounded-md flex items-center justify-center">
+                <Activity className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-[15px] font-bold text-zinc-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Vaidya</span>
+            </Link>
           </div>
-        </div>
-      </nav>
+          <Button size="sm" asChild>
+            <Link href="/scan">{t.common.newScan}</Link>
+          </Button>
+        </nav>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-20">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{t.reports.heading}</h1>
-          <p className="text-muted-foreground text-lg">{t.reports.subtitle}</p>
+        <div className="mb-10 anim-fade-up">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-zinc-900 tracking-[-0.02em] mb-2" style={{ fontFamily: 'var(--font-outfit)' }}>{t.reports.heading}</h1>
+          <p className="text-zinc-500 text-lg">{t.reports.subtitle}</p>
         </div>
 
-        {/* Loading State */}
-        {loading && (
+        {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Loading your health reports...</p>
+            <div className="w-10 h-10 rounded-2xl bg-zinc-200 animate-pulse mb-4" />
           </div>
-        )}
-
-        {!loading && (
+        ) : (
           <>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{t.reports.totalScans}</p>
-                      <p className="text-2xl font-bold">{reports.length}</p>
-                    </div>
-                    <Activity className="w-8 h-8 text-primary" />
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 anim-fade-up anim-delay-1">
+              {[
+                { label: t.reports.totalScans, value: reports.length, icon: Activity, iconBg: "bg-blue-50", iconColor: "text-blue-600" },
+                { label: t.reports.highPriority, value: reports.filter((r) => r.severity === "high").length, icon: AlertCircle, iconBg: "bg-red-50", iconColor: "text-red-500" },
+                { label: t.reports.mediumPriority, value: reports.filter((r) => r.severity === "medium").length, icon: Clock, iconBg: "bg-amber-50", iconColor: "text-amber-600" },
+                { label: t.reports.lowPriority, value: reports.filter((r) => r.severity === "low").length, icon: CheckCircle, iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
+              ].map((stat, i) => (
+                <div key={i} className="card-elevated p-5">
+                  <div className={`w-10 h-10 ${stat.iconBg} rounded-xl flex items-center justify-center mb-4`}>
+                    <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{t.reports.highPriority}</p>
-                      <p className="text-2xl font-bold text-destructive">
-                        {reports.filter((r) => r.severity === "high").length}
-                      </p>
-                    </div>
-                    <AlertCircle className="w-8 h-8 text-destructive" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{t.reports.mediumPriority}</p>
-                      <p className="text-2xl font-bold text-primary">
-                        {reports.filter((r) => r.severity === "medium").length}
-                      </p>
-                    </div>
-                    <Clock className="w-8 h-8 text-primary" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">{t.reports.lowPriority}</p>
-                      <p className="text-2xl font-bold text-accent">
-                        {reports.filter((r) => r.severity === "low").length}
-                      </p>
-                    </div>
-                    <CheckCircle className="w-8 h-8 text-accent" />
-                  </div>
-                </CardContent>
-              </Card>
+                  <p className="text-2xl font-bold text-zinc-900">{stat.value}</p>
+                  <p className="text-sm text-zinc-500 font-medium">{stat.label}</p>
+                </div>
+              ))}
             </div>
 
             {/* Filters */}
-            <Card className="mb-8">
-              <CardContent className="p-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
-                        placeholder={t.reports.search}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
-
-                  <Select value={filterCategory} onValueChange={setFilterCategory}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter by category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t.reports.allCategories}</SelectItem>
-                      <SelectItem value="posture">{t.reports.posture}</SelectItem>
-                      <SelectItem value="skin">{t.reports.dermatology}</SelectItem>
-                      <SelectItem value="eye">{t.reports.eyeHealth}</SelectItem>
-                      <SelectItem value="mental">{t.reports.mentalHealth}</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-                    <SelectTrigger className="w-full md:w-48">
-                      <SelectValue placeholder="Filter by severity" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t.reports.allSeverities}</SelectItem>
-                      <SelectItem value="high">{t.reports.highPriority}</SelectItem>
-                      <SelectItem value="medium">{t.reports.mediumPriority}</SelectItem>
-                      <SelectItem value="low">{t.reports.lowPriority}</SelectItem>
-                    </SelectContent>
-                  </Select>
+            <div className="card-elevated p-4 mb-10 anim-fade-up anim-delay-2">
+              <div className="flex flex-col md:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-400 w-4 h-4" />
+                  <Input
+                    placeholder={t.reports.search}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-zinc-50 border-zinc-200 rounded-xl h-11 text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400"
+                  />
                 </div>
-              </CardContent>
-            </Card>
+                <Select value={filterCategory} onValueChange={setFilterCategory}>
+                  <SelectTrigger className="w-full md:w-48 bg-zinc-50 border-zinc-200 rounded-xl h-11 text-zinc-600">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-zinc-200">
+                    <SelectItem value="all">{t.reports.allCategories}</SelectItem>
+                    <SelectItem value="posture">{t.reports.posture}</SelectItem>
+                    <SelectItem value="skin">{t.reports.dermatology}</SelectItem>
+                    <SelectItem value="eye">{t.reports.eyeHealth}</SelectItem>
+                    <SelectItem value="mental">{t.reports.mentalHealth}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterSeverity} onValueChange={setFilterSeverity}>
+                  <SelectTrigger className="w-full md:w-48 bg-zinc-50 border-zinc-200 rounded-xl h-11 text-zinc-600">
+                    <SelectValue placeholder="Severity" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-zinc-200">
+                    <SelectItem value="all">{t.reports.allSeverities}</SelectItem>
+                    <SelectItem value="high">{t.reports.highPriority}</SelectItem>
+                    <SelectItem value="medium">{t.reports.mediumPriority}</SelectItem>
+                    <SelectItem value="low">{t.reports.lowPriority}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
             {/* Reports Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredReports.map((report) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredReports.map((report, i) => {
                 const Icon = categoryIcons[report.category]
                 const SeverityIcon = getSeverityIcon(report.severity)
 
                 return (
-                  <Card key={report.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                            <Icon className="w-4 h-4 text-primary" />
-                          </div>
-                          <span className="text-sm font-medium text-muted-foreground">
-                            {categoryLabelsDefault[report.category]}
-                          </span>
+                  <div key={report.id} className="card-elevated p-6 flex flex-col anim-fade-up" style={{ animationDelay: `${i * 0.04}s` }}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-zinc-50 rounded-xl flex items-center justify-center">
+                          <Icon className="w-4 h-4 text-zinc-600" />
                         </div>
-                        <Badge variant={getSeverityColor(report.severity) as any} className="text-xs">
-                          <SeverityIcon className="w-3 h-3 mr-1" />
-                          {severityLabelsDefault[report.severity]}
-                        </Badge>
-                      </div>
-
-                      <CardTitle className="text-lg line-clamp-2">{report.condition}</CardTitle>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-3 h-3" />
-                          <span>{new Date(report.date).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <CheckCircle className="w-3 h-3" />
-                          <span>{report.confidence}</span>
+                        <div>
+                          <h3 className="text-base font-semibold text-zinc-900 leading-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{report.condition}</h3>
+                          <span className="text-[13px] text-zinc-400">{categoryLabelsDefault[report.category]}</span>
                         </div>
                       </div>
-                    </CardHeader>
+                      <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full border flex items-center gap-1 ${getSeverityStyle(report.severity)}`}>
+                        <SeverityIcon className="w-3 h-3" />
+                        {severityLabelsDefault[report.severity]}
+                      </span>
+                    </div>
 
-                    <CardContent className="pt-0">
-                      <CardDescription className="line-clamp-3 mb-4">{report.summary}</CardDescription>
+                    <p className="text-[14px] text-zinc-500 line-clamp-2 mb-5 flex-1 leading-relaxed">{report.summary}</p>
 
-                      <div className="flex space-x-2">
+                    <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
+                      <span className="text-[13px] text-zinc-400 font-medium">
+                        {new Date(report.date).toLocaleDateString()}
+                      </span>
+                      <div className="flex gap-1.5">
                         <Dialog>
                           <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="flex-1 bg-transparent"
-                              onClick={() => setSelectedReport(report)}
-                            >
+                            <Button variant="outline" size="sm" onClick={() => setSelectedReport(report)}>
                               <ExternalLink className="w-3 h-3 mr-1" />
                               {t.reports.viewDetails}
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto rounded-3xl border-zinc-200 shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
                             <DialogHeader>
-                              <DialogTitle className="flex items-center space-x-2">
-                                <Icon className="w-5 h-5 text-primary" />
-                                <span>{report.condition}</span>
+                              <DialogTitle className="flex items-center gap-2 text-zinc-900" style={{ fontFamily: 'var(--font-outfit)' }}>
+                                <Icon className="w-5 h-5 text-zinc-600" />
+                                {report.condition}
                               </DialogTitle>
-                              <DialogDescription>
+                              <DialogDescription className="text-zinc-500">
                                 {categoryLabelsDefault[report.category]} • {new Date(report.date).toLocaleDateString()}
                               </DialogDescription>
                             </DialogHeader>
 
-                            <div className="space-y-4">
+                            <div className="space-y-5">
                               <div className="flex items-center justify-between">
-                                <Badge variant={getSeverityColor(report.severity) as any}>
-                                  <SeverityIcon className="w-3 h-3 mr-1" />
+                                <span className={`text-[12px] font-semibold px-3 py-1.5 rounded-full border flex items-center gap-1.5 ${getSeverityStyle(report.severity)}`}>
+                                  <SeverityIcon className="w-3 h-3" />
                                   {severityLabelsDefault[report.severity]} {t.reports.priority}
-                                </Badge>
-                                <span className="text-sm font-medium">{t.reports.confidence}: {report.confidence}</span>
+                                </span>
+                                <span className="text-sm font-medium text-zinc-500">{t.reports.confidence}: {report.confidence}</span>
                               </div>
 
                               {report.chatHistory && report.chatHistory.length > 0 ? (
-                                <div className="space-y-3 mb-6">
-                                  <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                    <Activity className="w-4 h-4 text-primary" /> 
+                                <div className="space-y-3">
+                                  <h4 className="font-semibold text-zinc-900 flex items-center gap-2 text-sm">
+                                    <Activity className="w-4 h-4 text-zinc-500" />
                                     {t.reports.analysisSummary || "Conversation History"}
                                   </h4>
-                                  <div className="space-y-3 border border-border p-4 rounded-xl bg-card/50 max-h-[40vh] overflow-y-auto">
+                                  <div className="space-y-3 bg-zinc-50 p-4 rounded-xl border border-zinc-100 max-h-[40vh] overflow-y-auto">
                                     {report.chatHistory.map((msg, idx) => (
-                                      <div key={idx} className={`p-3 rounded-lg ${msg.role === "user" ? "bg-secondary/40 ml-12" : "bg-primary/10 mr-12"}`}>
-                                        <p className="text-xs font-semibold mb-1 opacity-70">{msg.role === "user" ? "You" : "Vaidya AI"}</p>
-                                        <p className="text-sm text-foreground whitespace-pre-wrap">{msg.content}</p>
+                                      <div key={idx} className={`p-3 rounded-xl text-sm ${msg.role === "user" ? "bg-white ml-10 border border-zinc-100" : "bg-zinc-100 mr-10"}`}>
+                                        <p className="text-[11px] font-semibold mb-1 text-zinc-400">{msg.role === "user" ? "You" : "Vaidya AI"}</p>
+                                        <p className="text-zinc-700 whitespace-pre-wrap">{msg.content}</p>
                                       </div>
                                     ))}
-                                    {/* Final Response (if not already in history) */}
                                     {report.description && (
-                                      <div className="p-3 rounded-lg bg-primary/10 mr-12">
-                                        <p className="text-xs font-semibold mb-1 opacity-70">Vaidya AI</p>
-                                        <p className="text-sm text-foreground whitespace-pre-wrap">{report.description}</p>
+                                      <div className="p-3 rounded-xl bg-zinc-100 mr-10">
+                                        <p className="text-[11px] font-semibold mb-1 text-zinc-400">Vaidya AI</p>
+                                        <p className="text-sm text-zinc-700 whitespace-pre-wrap">{report.description}</p>
                                       </div>
                                     )}
                                   </div>
@@ -555,31 +479,31 @@ export default function ReportsPage() {
                                 <>
                                   {report.userMessage && (
                                     <div>
-                                      <h4 className="font-semibold mb-2">Your Message</h4>
-                                      <p className="text-muted-foreground bg-secondary/30 p-3 rounded-lg">{report.userMessage}</p>
+                                      <h4 className="font-semibold mb-2 text-zinc-900 text-sm">Your Message</h4>
+                                      <p className="text-zinc-600 bg-zinc-50 p-3 rounded-xl text-sm border border-zinc-100">{report.userMessage}</p>
                                     </div>
                                   )}
 
                                   <div>
-                                    <h4 className="font-semibold mb-2">{t.reports.analysisSummary}</h4>
-                                    <p className="text-muted-foreground whitespace-pre-wrap">{report.description}</p>
+                                    <h4 className="font-semibold mb-2 text-zinc-900 text-sm">{t.reports.analysisSummary}</h4>
+                                    <p className="text-zinc-600 whitespace-pre-wrap text-sm">{report.description}</p>
                                   </div>
                                 </>
                               )}
 
                               <div>
-                                <h4 className="font-semibold mb-2">{t.reports.recommendations}</h4>
-                                <ul className="space-y-1">
+                                <h4 className="font-semibold mb-2 text-zinc-900 text-sm">{t.reports.recommendations}</h4>
+                                <ul className="space-y-2">
                                   {report.recommendations.map((rec, index) => (
-                                    <li key={index} className="flex items-start space-x-2 text-sm">
-                                      <CheckCircle className="w-3 h-3 text-accent mt-0.5 flex-shrink-0" />
-                                      <span>{rec}</span>
+                                    <li key={index} className="flex items-start gap-2.5 text-sm">
+                                      <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                      <span className="text-zinc-600">{rec}</span>
                                     </li>
                                   ))}
                                 </ul>
                               </div>
 
-                              <Button onClick={() => handleDownloadReport(report)} className="w-full">
+                              <Button onClick={() => handleDownloadReport(report)} className="w-full h-12">
                                 <Download className="w-4 h-4 mr-2" />
                                 {t.reports.download}
                               </Button>
@@ -587,21 +511,23 @@ export default function ReportsPage() {
                           </DialogContent>
                         </Dialog>
 
-                        <Button variant="ghost" size="sm" onClick={() => handleDownloadReport(report)}>
-                          <Download className="w-3 h-3" />
+                        <Button variant="ghost" size="sm" onClick={() => handleDownloadReport(report)} className="text-zinc-400 hover:text-zinc-900 px-2">
+                          <Download className="w-3.5 h-3.5" />
                         </Button>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 )
               })}
             </div>
 
             {filteredReports.length === 0 && (
-              <div className="text-center py-12">
-                <Activity className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">{t.reports.noReports}</h3>
-                <p className="text-muted-foreground mb-4">
+              <div className="text-center py-20 anim-fade-up">
+                <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+                  <Activity className="w-7 h-7 text-zinc-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-zinc-900 mb-2" style={{ fontFamily: 'var(--font-outfit)' }}>{t.reports.noReports}</h3>
+                <p className="text-zinc-500 mb-6 max-w-sm mx-auto">
                   {searchTerm || filterCategory !== "all" || filterSeverity !== "all"
                     ? t.reports.noReportsFilter
                     : t.reports.noReportsHint}

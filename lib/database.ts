@@ -1,19 +1,20 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js"
 
-let _supabase: SupabaseClient | null = null
+function getSupabase(accessToken: string): SupabaseClient {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
 
-function getSupabase(): SupabaseClient {
-  if (!_supabase) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.warn("[Vaidya] WARNING: Supabase environment variables are not set!")
-    }
-
-    _supabase = createClient(supabaseUrl, supabaseAnonKey)
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error("Supabase environment variables are not configured")
   }
-  return _supabase
+
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    global: {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  })
 }
 
 
@@ -49,9 +50,9 @@ export interface UserData {
 }
 
 // Get all health data (reconstructed from Supabase records)
-export async function getHealthData(): Promise<UserData> {
+export async function getHealthData(accessToken: string): Promise<UserData> {
   try {
-    const { data: records, error } = await getSupabase()
+    const { data: records, error } = await getSupabase(accessToken)
       .from("health_records")
       .select("*")
       .order("timestamp", { ascending: false })
@@ -101,9 +102,9 @@ export async function getHealthData(): Promise<UserData> {
 }
 
 // Save a health record to Supabase
-export async function saveHealthRecord(record: HealthRecord): Promise<boolean> {
+export async function saveHealthRecord(record: HealthRecord, accessToken: string): Promise<boolean> {
   try {
-    const { error } = await getSupabase().from("health_records").upsert({
+    const { error } = await getSupabase(accessToken).from("health_records").upsert({
       id: record.id,
       user_id: record.userId,
       category: record.category,
@@ -127,9 +128,9 @@ export async function saveHealthRecord(record: HealthRecord): Promise<boolean> {
 }
 
 // Get a user's health records
-export async function getUserHealthRecords(userId = "default"): Promise<HealthRecord[]> {
+export async function getUserHealthRecords(userId: string, accessToken: string): Promise<HealthRecord[]> {
   try {
-    const { data: records, error } = await getSupabase()
+    const { data: records, error } = await getSupabase(accessToken)
       .from("health_records")
       .select("*")
       .eq("user_id", userId)

@@ -1,11 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { analyzeWithGemini } from "@/lib/gemini"
 import { saveHealthRecord } from "@/lib/database"
+import { getAuthContext } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getAuthContext(request)
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await request.json()
-    const { fileId, analysisData, userId = "default" } = body
+    const { fileId, analysisData } = body
 
     const prompt = `
     Analyze posture data for health assessment. Consider the following factors:
@@ -23,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const healthRecord = {
       id: `posture_${Date.now()}`,
-      userId,
+      userId: auth.userId,
       category: "posture" as const,
       analysis,
       timestamp: new Date().toISOString(),
@@ -36,7 +42,7 @@ export async function POST(request: NextRequest) {
         : undefined,
     }
 
-    const saved = await saveHealthRecord(healthRecord)
+    const saved = await saveHealthRecord(healthRecord, auth.accessToken)
 
     if (!saved) {
       console.warn("Failed to save health record to database")

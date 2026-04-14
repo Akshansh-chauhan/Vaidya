@@ -1,13 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getHealthData, getUserHealthRecords } from "@/lib/database"
+import { getUserHealthRecords } from "@/lib/database"
+import { getAuthContext } from "@/lib/auth"
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get("userId") || "default"
+    const auth = await getAuthContext(request)
+    if (!auth) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
+    }
 
-    const healthData = await getHealthData()
-    const userRecords = await getUserHealthRecords(userId)
+    const userRecords = await getUserHealthRecords(auth.userId, auth.accessToken)
 
     // Calculate category scores from actual records
     const categoryScores: Record<string, any> = {}
@@ -48,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     const healthSummary = {
       overallScore,
-      lastUpdated: healthData.summary.lastUpdated,
+      lastUpdated: userRecords[0]?.timestamp || new Date().toISOString(),
       totalScans: userRecords.length,
       categories: categoryScores,
       recommendations: [

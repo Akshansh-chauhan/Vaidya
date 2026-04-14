@@ -2,20 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
-import { Activity, Eye, Scan, Brain, ArrowLeft, Clock, Target, CheckCircle, RotateCcw } from "lucide-react"
+import { Activity, Eye, Scan, Brain, ArrowLeft, Clock, Target, CheckCircle, RotateCcw, Check } from "lucide-react"
 import { useLanguage } from "@/lib/use-language"
 import { getSubPageTranslations } from "@/lib/sub-translations"
 import { getPlansTranslations } from "@/lib/mock-data-translations"
 import { useAuth } from "@/components/auth-provider"
 import { useRouter } from "next/navigation"
 import { getSupabaseClient } from "@/lib/supabase"
-import { Loader2 } from "lucide-react"
 
 interface Exercise {
   id: string
@@ -45,8 +41,6 @@ export default function PlansPage() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("posture")
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
-  const [timerActive, setTimerActive] = useState<string | null>(null)
-  const [timerSeconds, setTimerSeconds] = useState(0)
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -119,255 +113,213 @@ export default function PlansPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "beginner":
-        return "secondary"
-      case "intermediate":
-        return "default"
-      case "advanced":
-        return "destructive"
-      default:
-        return "secondary"
+      case "beginner": return "bg-emerald-50 text-emerald-700"
+      case "intermediate": return "bg-amber-50 text-amber-700"
+      case "advanced": return "bg-rose-50 text-rose-700"
+      default: return "bg-zinc-50 text-zinc-700"
     }
   }
 
   const activePlan = healthPlans.find((plan) => plan.category === activeTab)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card/30 to-background">
-      {/* Navigation */}
-      <nav className="border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  {t.common.backHome}
-                </Link>
-              </Button>
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Activity className="w-5 h-5 text-primary-foreground" />
+    <div className="min-h-screen bg-[#fafafa]">
+      {/* Nav */}
+      <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 anim-fade-up">
+        <nav className="nav-float rounded-full px-3 py-2 flex items-center justify-between w-full max-w-5xl">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" asChild className="text-zinc-500 hover:text-zinc-900">
+              <Link href="/">
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                {t.common.backHome}
+              </Link>
+            </Button>
+            <div className="w-px h-5 bg-zinc-200" />
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-zinc-900 rounded-md flex items-center justify-center">
+                <Activity className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-[15px] font-bold text-zinc-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Vaidya</span>
+            </Link>
+          </div>
+          <Button size="sm" asChild>
+            <Link href="/scan">{t.common.newScan}</Link>
+          </Button>
+        </nav>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-20">
+        {/* Header */}
+        <div className="text-center mb-12 anim-fade-up">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-zinc-900 tracking-[-0.02em] mb-3" style={{ fontFamily: 'var(--font-outfit)' }}>{t.plans.heading}</h1>
+          <p className="text-zinc-500 text-lg max-w-xl mx-auto">{t.plans.subtitle}</p>
+        </div>
+
+        {/* Progress Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 anim-fade-up anim-delay-1">
+          {healthPlans.map((plan) => {
+            const completed = plan.exercises.filter((ex) => completedExercises.has(ex.id)).length
+            const total = plan.exercises.length
+            const percentage = total > 0 ? (completed / total) * 100 : 0
+
+            return (
+              <button
+                key={plan.category}
+                onClick={() => setActiveTab(plan.category)}
+                className={`card-elevated p-5 text-left cursor-pointer transition-all ${activeTab === plan.category ? "ring-2 ring-zinc-900 ring-offset-2" : ""}`}
+              >
+                <div className="w-9 h-9 bg-zinc-50 rounded-xl flex items-center justify-center mb-4">
+                  <plan.icon className="w-4 h-4 text-zinc-600" />
                 </div>
-                <span className="text-xl font-bold text-foreground">Vaidya</span>
+                <h4 className="font-semibold text-zinc-900 mb-2 text-sm">{plan.title.split(" ")[0]}</h4>
+                <div className="w-full bg-zinc-100 rounded-full h-1.5 mb-1.5 overflow-hidden">
+                  <div className="bg-zinc-900 h-1.5 rounded-full transition-all duration-500" style={{ width: `${percentage}%` }} />
+                </div>
+                <p className="text-[12px] text-zinc-400 font-medium">
+                  {completed}/{total} {t.plans.exercises}
+                </p>
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Active Plan Content */}
+        {activePlan && (
+          <div className="space-y-6 anim-fade-up anim-delay-2">
+            {/* Overview */}
+            <div className="card-elevated p-8 sm:p-10">
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-semibold text-zinc-900 mb-3" style={{ fontFamily: 'var(--font-outfit)' }}>{activePlan.title}</h2>
+                  <p className="text-zinc-500 text-[15px] leading-relaxed mb-6">{activePlan.description}</p>
+
+                  <h3 className="font-semibold text-zinc-900 mb-3 flex items-center gap-2 text-sm">
+                    <Target className="w-4 h-4 text-zinc-400" />
+                    {t.plans.goals}
+                  </h3>
+                  <ul className="space-y-2.5">
+                    {activePlan.goals.map((goal, index) => (
+                      <li key={index} className="flex items-start gap-2.5 text-sm">
+                        <CheckCircle className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-zinc-600">{goal}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="w-px bg-zinc-100 hidden md:block" />
+
+                <div className="md:max-w-xs flex-1">
+                  <h3 className="font-semibold text-zinc-900 mb-3 flex items-center gap-2 text-sm">
+                    <Activity className="w-4 h-4 text-zinc-400" />
+                    {t.plans.tips}
+                  </h3>
+                  <div className="space-y-2.5">
+                    {activePlan.tips.slice(0, 4).map((tip, index) => (
+                      <div key={index} className="bg-zinc-50 rounded-xl p-3.5 text-[14px] text-zinc-600 leading-relaxed border border-zinc-100">
+                        {tip}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
-            <Button asChild>
-              <Link href="/scan">{t.common.newScan}</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4">{t.plans.heading}</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.plans.subtitle}</p>
-        </div>
+            {/* Exercises */}
+            <div className="card-elevated p-8 sm:p-10">
+              <h3 className="text-xl font-semibold text-zinc-900 mb-1" style={{ fontFamily: 'var(--font-outfit)' }}>{t.plans.exerciseProgram}</h3>
+              <p className="text-zinc-500 text-sm mb-6">{t.plans.exerciseDesc}</p>
 
-        {/* Progress Overview */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Target className="w-5 h-5" />
-              <span>{t.plans.progress}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {healthPlans.map((plan) => {
-                const completed = plan.exercises.filter((ex) => completedExercises.has(ex.id)).length
-                const total = plan.exercises.length
-                const percentage = total > 0 ? (completed / total) * 100 : 0
+              <Accordion type="single" collapsible className="space-y-3">
+                {activePlan.exercises.map((exercise) => {
+                  const isCompleted = completedExercises.has(exercise.id)
+                  return (
+                    <AccordionItem key={exercise.id} value={exercise.id} className="border border-zinc-100 rounded-2xl px-5 bg-zinc-50/50 data-[state=open]:bg-white data-[state=open]:shadow-sm transition-all">
+                      <AccordionTrigger className="hover:no-underline py-4">
+                        <div className="flex items-center justify-between w-full mr-4">
+                          <div className="flex items-center gap-3">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                toggleExerciseComplete(exercise.id)
+                              }}
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${isCompleted ? "bg-zinc-900 border-zinc-900" : "border-zinc-300 hover:border-zinc-400"}`}
+                            >
+                              {isCompleted && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                            </button>
+                            <span className={`font-medium text-[15px] transition-colors ${isCompleted ? "text-zinc-400 line-through" : "text-zinc-900"}`}>{exercise.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${getDifficultyColor(exercise.difficulty)}`}>
+                              {t.plans[exercise.difficulty as "beginner" | "intermediate" | "advanced"]}
+                            </span>
+                            <span className="flex items-center gap-1 text-[13px] text-zinc-400 font-medium">
+                              <Clock className="w-3 h-3" />
+                              {exercise.duration}
+                            </span>
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-2 pb-5">
+                        <div className="pl-9 grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div>
+                            <h4 className="font-semibold text-zinc-900 mb-3 text-sm">{t.plans.instructions}</h4>
+                            <ol className="space-y-3">
+                              {exercise.instructions.map((instruction, idx) => (
+                                <li key={idx} className="flex items-start gap-3 text-sm">
+                                  <span className="bg-zinc-100 text-zinc-600 rounded-lg w-5 h-5 flex items-center justify-center text-xs font-semibold flex-shrink-0 mt-0.5">
+                                    {idx + 1}
+                                  </span>
+                                  <span className="text-zinc-600 leading-relaxed">{instruction}</span>
+                                </li>
+                              ))}
+                            </ol>
 
-                return (
-                  <div key={plan.category} className="text-center">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-2">
-                      <plan.icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="font-semibold mb-1">{plan.title.split(" ")[0]}</h3>
-                    <Progress value={percentage} className="h-2 mb-1" />
-                    <p className="text-sm text-muted-foreground">
-                      {completed}/{total} {t.plans.exercises}
-                    </p>
-                  </div>
-                )
-              })}
+                            <div className="mt-4 p-3.5 bg-zinc-50 rounded-xl border border-zinc-100">
+                              <p className="text-xs font-semibold text-zinc-500 mb-1">{t.plans.frequency}</p>
+                              <p className="text-sm text-zinc-700">{exercise.frequency}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="font-semibold text-zinc-900 mb-3 text-sm">{t.plans.benefits}</h4>
+                            <ul className="space-y-2.5 mb-6">
+                              {exercise.benefits.map((benefit, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5 text-sm">
+                                  <CheckCircle className="w-3.5 h-3.5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                                  <span className="text-zinc-600">{benefit}</span>
+                                </li>
+                              ))}
+                            </ul>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => toggleExerciseComplete(exercise.id)}
+                              className="w-full"
+                            >
+                              {completedExercises.has(exercise.id) ? (
+                                <>
+                                  <RotateCcw className="w-3 h-3 mr-1" />
+                                  {t.plans.markIncomplete}
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  {t.plans.markComplete}
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  )
+                })}
+              </Accordion>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Plans Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            {healthPlans.map((plan) => (
-              <TabsTrigger key={plan.category} value={plan.category} className="flex items-center space-x-2">
-                <plan.icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{plan.title.split(" ")[0]}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {healthPlans.map((plan) => (
-            <TabsContent key={plan.category} value={plan.category} className="space-y-6">
-              {/* Plan Overview */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <plan.icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl">{plan.title}</CardTitle>
-                      <CardDescription className="text-base">{plan.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Goals */}
-                    <div>
-                      <h3 className="font-semibold mb-3 flex items-center">
-                        <Target className="w-4 h-4 mr-2" />
-                        {t.plans.goals}
-                      </h3>
-                      <ul className="space-y-2">
-                        {plan.goals.map((goal, index) => (
-                          <li key={index} className="flex items-start space-x-2 text-sm">
-                            <CheckCircle className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                            <span>{goal}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Tips */}
-                    <div>
-                      <h3 className="font-semibold mb-3 flex items-center">
-                        <Activity className="w-4 h-4 mr-2" />
-                        {t.plans.tips}
-                      </h3>
-                      <ul className="space-y-2">
-                        {plan.tips.slice(0, 4).map((tip, index) => (
-                          <li key={index} className="flex items-start space-x-2 text-sm">
-                            <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-                            <span>{tip}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Exercises */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t.plans.exerciseProgram}</CardTitle>
-                  <CardDescription>{t.plans.exerciseDesc}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="single" collapsible className="space-y-4">
-                    {plan.exercises.map((exercise, index) => (
-                      <AccordionItem key={exercise.id} value={exercise.id} className="border rounded-lg px-4">
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center justify-between w-full mr-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    toggleExerciseComplete(exercise.id)
-                                  }}
-                                  className="p-1 h-6 w-6"
-                                >
-                                  <CheckCircle
-                                    className={`w-4 h-4 ${completedExercises.has(exercise.id)
-                                      ? "text-accent fill-accent"
-                                      : "text-muted-foreground"
-                                      }`}
-                                  />
-                                </Button>
-                                <span className="font-medium">{exercise.name}</span>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge variant={getDifficultyColor(exercise.difficulty) as any} className="text-xs">
-                                {t.plans[exercise.difficulty as "beginner" | "intermediate" | "advanced"]}
-                              </Badge>
-                              <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-                                <Clock className="w-3 h-3" />
-                                <span>{exercise.duration}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-4">
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div>
-                              <h4 className="font-semibold mb-2">{t.plans.instructions}</h4>
-                              <ol className="space-y-2">
-                                {exercise.instructions.map((instruction, idx) => (
-                                  <li key={idx} className="flex items-start space-x-2 text-sm">
-                                    <span className="bg-primary/10 text-primary rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">
-                                      {idx + 1}
-                                    </span>
-                                    <span>{instruction}</span>
-                                  </li>
-                                ))}
-                              </ol>
-
-                              <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                                <p className="text-sm font-medium mb-1">{t.plans.frequency}</p>
-                                <p className="text-sm text-muted-foreground">{exercise.frequency}</p>
-                              </div>
-                            </div>
-
-                            <div>
-                              <h4 className="font-semibold mb-2">{t.plans.benefits}</h4>
-                              <ul className="space-y-2 mb-4">
-                                {exercise.benefits.map((benefit, idx) => (
-                                  <li key={idx} className="flex items-start space-x-2 text-sm">
-                                    <CheckCircle className="w-3 h-3 text-accent mt-0.5 flex-shrink-0" />
-                                    <span>{benefit}</span>
-                                  </li>
-                                ))}
-                              </ul>
-
-                              <div className="flex space-x-2">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => toggleExerciseComplete(exercise.id)}
-                                  className="flex-1"
-                                >
-                                  {completedExercises.has(exercise.id) ? (
-                                    <>
-                                      <RotateCcw className="w-3 h-3 mr-1" />
-                                      {t.plans.markIncomplete}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <CheckCircle className="w-3 h-3 mr-1" />
-                                      {t.plans.markComplete}
-                                    </>
-                                  )}
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+          </div>
+        )}
       </div>
     </div>
   )

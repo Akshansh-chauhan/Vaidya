@@ -1,10 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { analyzeWithGeminiChat } from "@/lib/gemini"
 import { saveHealthRecord } from "@/lib/database"
-import { getAuthUserId } from "@/lib/auth"
+import { getAuthContext } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await getAuthContext(request)
+    if (!auth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const formData = await request.formData()
     const message = formData.get("message") as string
     const chatHistoryStr = formData.get("chatHistory") as string
@@ -37,7 +42,7 @@ export async function POST(request: NextRequest) {
       try {
         await saveHealthRecord({
           id: `mental-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-          userId: "default",
+          userId: auth.userId,
           category: "mental",
           analysis: {
             userMessage: message || "Audio message for mental health assessment",
@@ -54,7 +59,7 @@ export async function POST(request: NextRequest) {
             fileSize: file.size,
             fileType: file.type,
           },
-        })
+        }, auth.accessToken)
       } catch (dbError) {
         console.error("Failed to save mental health record:", dbError)
       }
@@ -70,13 +75,11 @@ export async function POST(request: NextRequest) {
       language,
     )
 
-    const userId = await getAuthUserId(request)
-
     // Save to Supabase
     try {
       await saveHealthRecord({
         id: sessionId || `mental-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-        userId,
+        userId: auth.userId,
         category: "mental",
         analysis: {
           userMessage: message || "Mental health check-in stated",
@@ -89,7 +92,7 @@ export async function POST(request: NextRequest) {
           condition: "Mental Health Check",
         },
         timestamp: new Date().toISOString(),
-      })
+      }, auth.accessToken)
     } catch (dbError) {
       console.error("Failed to save mental health record:", dbError)
     }
