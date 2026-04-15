@@ -26,7 +26,13 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password })
+        const { error } = await supabase.auth.signUp({ 
+          email, 
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/scan`
+          }
+        })
         if (error) throw error
         setSuccess("Check your email to confirm your account, then log in!")
         setIsSignUp(false)
