@@ -321,12 +321,12 @@ export default function HomePage() {
               <div className="glass-card p-6 sm:p-10 relative overflow-hidden min-h-[340px] md:min-h-[340px] flex flex-col justify-start md:justify-end group">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-transparent to-violet-50/60 rounded-[24px]" />
                 <div className="perspective-card absolute right-3 md:right-8 top-6 md:top-8 w-[48%] max-w-[156px] md:max-w-[240px]">
-                  <div className="tilted glass-card p-5 !shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
-                    <div className="flex items-center gap-2 mb-3">
+                  <div className="tilted glass-card p-4 md:p-5 !shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
+                    <div className="flex items-center gap-2 mb-2 md:mb-3">
                       <Activity className="w-4 h-4 text-blue-600" />
-                      <span className="text-[12px] font-bold text-zinc-500 uppercase tracking-wider">Posture</span>
+                      <span className="text-[10px] md:text-[12px] font-bold text-zinc-500 uppercase tracking-wider">Posture</span>
                     </div>
-                    <div className="w-16 h-16 mx-auto mb-3 relative">
+                    <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-2 md:mb-3 relative">
                       <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
                         <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#e5e7eb" strokeWidth="3" />
                         <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="url(#ring-grad)" strokeWidth="3" strokeDasharray="92, 100" strokeLinecap="round" />
@@ -337,7 +337,7 @@ export default function HomePage() {
                           </linearGradient>
                         </defs>
                       </svg>
-                      <span className="absolute inset-0 flex items-center justify-center text-lg font-bold text-zinc-900">92%</span>
+                      <span className="absolute inset-0 flex items-center justify-center text-sm md:text-lg font-bold text-zinc-900">92%</span>
                     </div>
                     <div className="space-y-1.5">
                       <div className="h-2 bg-gradient-to-r from-emerald-400 to-emerald-300 rounded-full w-full" />
@@ -349,8 +349,8 @@ export default function HomePage() {
                   <div className="w-11 h-11 bg-blue-100 rounded-2xl flex items-center justify-center mt-1 mb-5 md:mt-0 md:mb-5">
                     <Activity className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h3 className="text-2xl font-semibold text-zinc-900 mb-2 mt-20 md:mt-0 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{t.features.posture}</h3>
-                  <p className="text-zinc-500 leading-relaxed text-[15px] mt-8">{t.features.postureDesc}</p>
+                  <h3 className="text-2xl font-semibold text-zinc-900 mb-2 mt-32 sm:mt-[130px] md:mt-0 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{t.features.posture}</h3>
+                  <p className="text-zinc-500 leading-relaxed text-[15px] mt-4 md:mt-8">{t.features.postureDesc}</p>
                 </div>
               </div>
             </div>
