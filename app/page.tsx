@@ -232,7 +232,7 @@ export default function HomePage() {
             </div>
 
             {/* ——— Floating Glass Health Cards ——— */}
-            <div className="anim-fade-up anim-delay-3 relative max-w-3xl mx-auto h-[190px] sm:h-[300px] hidden sm:block">
+            <div className="anim-fade-up anim-delay-3 relative max-w-3xl mx-auto w-full h-[190px] sm:h-[300px] mt-8 sm:mt-0 block">
               {/* Center — Recovery Score */}
               <div className="glass-card-dark absolute left-1/2 -translate-x-1/2 top-0 w-[180px] sm:w-[260px] p-4 sm:p-6 z-30 anim-float">
                 <div className="flex items-center gap-2 mb-3">
