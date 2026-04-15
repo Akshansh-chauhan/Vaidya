@@ -208,18 +208,18 @@ export default function HomePage() {
         </div>
 
         {/* ——— Hero Content (over image) ——— */}
-        <div className="relative z-10 flex flex-col items-center justify-start sm:justify-center min-h-[100vh] pt-28 sm:pt-24 lg:pt-[4.5rem] px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 flex flex-col items-center justify-end sm:justify-center min-h-[100vh] pb-24 sm:pb-0 pt-24 lg:pt-[4.5rem] px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto text-center">
-            <h1 className="anim-fade-up text-4xl sm:text-6xl lg:text-[80px] font-semibold tracking-[-0.04em] text-white leading-[1.05] mb-5 sm:mb-6 max-w-[340px] sm:max-w-none mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.3)]" style={{ fontFamily: 'var(--font-outfit)' }}>
+            <h1 className="anim-fade-up text-4xl sm:text-6xl lg:text-[80px] font-semibold tracking-[-0.04em] text-white leading-[1.05] mb-4 sm:mb-6 max-w-[340px] sm:max-w-none mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.3)]" style={{ fontFamily: 'var(--font-outfit)' }}>
               {t.hero.title}{" "}
               <span className="text-white/80">{t.hero.highlight}</span>
             </h1>
 
-            <p className="anim-fade-up anim-delay-1 text-base sm:text-xl text-white/75 text-balance max-w-[360px] sm:max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed">
+            <p className="anim-fade-up anim-delay-1 text-base sm:text-xl text-white/75 text-balance max-w-[360px] sm:max-w-2xl mx-auto mb-6 sm:mb-10 leading-relaxed">
               {t.hero.subtitle}
             </p>
 
-            <div className="anim-fade-up anim-delay-2 flex flex-col sm:flex-row gap-3 justify-center mb-12 sm:mb-16 px-2 sm:px-0">
+            <div className="anim-fade-up anim-delay-2 flex flex-col sm:flex-row gap-3 justify-center mb-8 sm:mb-16 px-2 sm:px-0">
               <Button asChild size="lg" className="bg-white text-zinc-900 hover:bg-white/90 text-base px-8 h-13 shadow-[0_8px_30px_rgba(0,0,0,0.2)]">
                 <Link href="/scan">
                   {t.cta.startScan}
@@ -232,7 +232,7 @@ export default function HomePage() {
             </div>
 
             {/* ——— Floating Glass Health Cards ——— */}
-            <div className="anim-fade-up anim-delay-3 relative max-w-3xl mx-auto w-full h-[190px] sm:h-[300px] mt-8 sm:mt-0 block">
+            <div className="anim-fade-up anim-delay-3 relative max-w-3xl mx-auto w-full h-[160px] sm:h-[300px] mt-2 sm:mt-0 block">
               {/* Center — Recovery Score */}
               <div className="glass-card-dark absolute left-1/2 -translate-x-1/2 top-0 w-[180px] sm:w-[260px] p-4 sm:p-6 z-30 anim-float">
                 <div className="flex items-center gap-2 mb-3">
@@ -252,7 +252,7 @@ export default function HomePage() {
               </div>
 
               {/* Left — HRV */}
-              <div className="glass-card-dark absolute left-0 sm:left-4 top-14 sm:top-12 w-[132px] sm:w-[200px] p-3 sm:p-5 z-20 anim-float-reverse opacity-90">
+              <div className="glass-card-dark absolute left-0 sm:left-4 top-8 sm:top-12 w-[132px] sm:w-[200px] p-3 sm:p-5 z-20 anim-float-reverse opacity-90">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-6 h-6 bg-violet-500/20 rounded-full flex items-center justify-center">
                     <TrendingUp className="w-3 h-3 text-violet-400" />
@@ -272,7 +272,7 @@ export default function HomePage() {
               </div>
 
               {/* Right — Resting HR */}
-              <div className="glass-card-dark absolute right-0 sm:right-4 top-16 sm:top-16 w-[132px] sm:w-[200px] p-3 sm:p-5 z-20 anim-float opacity-85">
+              <div className="glass-card-dark absolute right-0 sm:right-4 top-10 sm:top-16 w-[132px] sm:w-[200px] p-3 sm:p-5 z-20 anim-float opacity-85">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-6 h-6 bg-rose-500/20 rounded-full flex items-center justify-center">
                     <BarChart3 className="w-3 h-3 text-rose-400" />
