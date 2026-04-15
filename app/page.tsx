@@ -318,7 +318,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {/* Large — Posture with 3D mockup */}
             <div className="lg:col-span-2 anim-fade-up anim-delay-1">
-              <div className="glass-card p-6 sm:p-10 relative overflow-hidden min-h-[340px] md:min-h-[340px] flex flex-col justify-start md:justify-end group">
+              <div className="glass-card p-8 sm:p-10 relative overflow-hidden min-h-[340px] md:min-h-[340px] flex flex-col justify-start md:justify-end group">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-transparent to-violet-50/60 rounded-[24px]" />
                 <div className="perspective-card absolute right-3 md:right-8 top-6 md:top-8 w-[48%] max-w-[156px] md:max-w-[240px]">
                   <div className="tilted glass-card p-4 md:p-5 !shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
@@ -349,7 +349,7 @@ export default function HomePage() {
                   <div className="w-11 h-11 bg-blue-100 rounded-2xl flex items-center justify-center mt-1 mb-5 md:mt-0 md:mb-5">
                     <Activity className="w-5 h-5 text-blue-600" />
                   </div>
-                  <h3 className="text-2xl font-semibold text-zinc-900 mb-2 mt-32 sm:mt-[130px] md:mt-0 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{t.features.posture}</h3>
+                  <h3 className="text-2xl font-semibold text-zinc-900 mb-2 mt-24 sm:mt-[100px] md:mt-0 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>{t.features.posture}</h3>
                   <p className="text-zinc-500 leading-relaxed text-[15px] mt-4 md:mt-8">{t.features.postureDesc}</p>
                 </div>
               </div>
