@@ -208,8 +208,8 @@ export default function HomePage() {
         </div>
 
         {/* ——— Hero Content (over image) ——— */}
-        <div className="relative z-10 flex flex-col items-center justify-center min-h-[100vh] pt-20 sm:pt-24 lg:pt-[4.5rem] px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto text-center">
+        <div className="relative z-10 flex flex-col items-center justify-start sm:justify-center min-h-[100vh] pt-20 pb-6 sm:pb-0 sm:pt-24 lg:pt-[4.5rem] px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto text-center mt-auto sm:mt-0">
             <h1 className="anim-fade-up text-4xl sm:text-6xl lg:text-[80px] font-semibold tracking-[-0.04em] text-white leading-[1.05] mb-4 sm:mb-6 max-w-[340px] sm:max-w-none mx-auto drop-shadow-[0_2px_20px_rgba(0,0,0,0.3)]" style={{ fontFamily: 'var(--font-outfit)' }}>
               {t.hero.title}{" "}
               <span className="text-white/80">{t.hero.highlight}</span>
@@ -290,7 +290,7 @@ export default function HomePage() {
           </div>
 
           {/* Trust badges */}
-          <div className="anim-fade-up anim-delay-4 flex flex-wrap justify-center gap-2 sm:gap-3 mt-6 sm:-mt-12 relative z-20">
+          <div className="anim-fade-up anim-delay-4 flex flex-wrap justify-center gap-2 sm:gap-3 mt-auto mb-auto sm:-mt-12 sm:mb-0 relative z-20">
             {[t.benefits.b1, t.benefits.b2, t.benefits.b3].map((b, i) => (
               <div key={i} className="glass-card-dark flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 !rounded-full text-[12px] sm:text-[14px] text-white/80 font-medium !shadow-sm">
                 <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
