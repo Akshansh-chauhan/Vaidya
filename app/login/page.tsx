@@ -96,17 +96,11 @@ export default function LoginPage() {
     <div className="min-h-screen flex relative overflow-hidden">
       {/* ——— Left Panel: Background Image with glass overlays ——— */}
       <div className="hidden md:flex md:flex-1 relative overflow-hidden items-center justify-center">
-        {/* Optimized Desktop Background image */}
-        <div className="absolute inset-0 -z-30">
-          <Image 
-            src="/login-bg.png" 
-            alt="Login Background" 
-            fill 
-            priority 
-            className="object-cover object-center" 
-            quality={80}
-          />
-        </div>
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/login-bg.png')" }}
+        />
         {/* Soft overlay */}
         <div className="absolute inset-0 bg-black/20" />
 
@@ -149,17 +143,11 @@ export default function LoginPage() {
 
       {/* ——— Right Panel: Auth Form ——— */}
       <div className="flex-1 flex items-center justify-center px-5 sm:px-6 py-8 sm:py-0 md:py-6 bg-[#fafafa] relative overflow-hidden">
-        {/* Mobile-only Optimized full background image */}
-        <div className="absolute inset-0 md:hidden z-0">
-          <Image 
-            src="/login-bg.png" 
-            alt="Mobile Login Background" 
-            fill 
-            priority 
-            className="object-cover object-center" 
-            quality={80}
-          />
-        </div>
+        {/* Mobile-only full background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
+          style={{ backgroundImage: "url('/login-bg.png')" }}
+        />
         <div className="absolute inset-0 bg-black/35 md:hidden" />
 
         <div className="relative z-10 w-full max-w-[400px] md:max-w-[360px]">

@@ -132,14 +132,10 @@ export default function HomePage() {
           HERO — Full bleed background image like Bevel
           ═══════════════════════════════════════════ */}
       <section className="relative min-h-[100vh] overflow-hidden">
-        {/* Optimized Next.js Background image */}
-        <Image 
-          src="/hero-bg.png" 
-          alt="Hero Background" 
-          fill 
-          priority 
-          className="object-cover object-center absolute inset-0 -z-30" 
-          quality={80}
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/hero-bg.png')" }}
         />
         {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
