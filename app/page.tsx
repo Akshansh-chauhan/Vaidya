@@ -113,6 +113,13 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  // Catch Supabase authentication fallback loops and gracefully redirect to success page
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search.includes("code=")) {
+      window.location.href = "/auth-success.html"
+    }
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#fafafa]">
       {/* ═══════════════════════════════════════════

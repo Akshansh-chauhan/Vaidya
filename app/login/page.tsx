@@ -105,7 +105,7 @@ export default function LoginPage() {
 
         <div className="relative z-10 p-10 max-w-md">
           {/* Floating glass health cards over the image */}
-          <div className="glass-card-dark p-6 mb-5 anim-float">
+          <div className="glass-card-login p-6 mb-5 anim-float">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center">
                 <Heart className="w-4 h-4 text-emerald-400" />
@@ -122,14 +122,14 @@ export default function LoginPage() {
           </div>
 
           <div className="flex gap-4">
-            <div className="glass-card-dark p-4 flex-1 anim-float-reverse">
+            <div className="glass-card-login p-4 flex-1 anim-float-reverse">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-3.5 h-3.5 text-violet-400" />
                 <span className="text-[11px] font-bold text-white/50">HRV</span>
               </div>
               <p className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-outfit)' }}>65.1 <span className="text-xs font-medium text-white/40">ms</span></p>
             </div>
-            <div className="glass-card-dark p-4 flex-1 anim-float">
+            <div className="glass-card-login p-4 flex-1 anim-float">
               <div className="flex items-center gap-2 mb-1">
                 <Activity className="w-3.5 h-3.5 text-rose-400" />
                 <span className="text-[11px] font-bold text-white/50">BPM</span>
