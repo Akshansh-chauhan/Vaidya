@@ -2,6 +2,8 @@
 
 An AI-powered health assistant providing comprehensive analysis for posture, skin conditions, eye health, and mental wellness. Built with **Next.js 14**, **Tailwind CSS v4**, **Radix UI**, and **Google Gemini AI**.
 
+Hosted on Vercel : https://evaidya.site/
+
 ## Features
 
 - **Spine & Posture Analysis** — Upload photos/videos for AI-powered posture assessment
@@ -35,17 +37,10 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### Environment Variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `GEMINI_API_KEY` | ✅ | Google Gemini API key from [AI Studio](https://aistudio.google.com) |
 
 ### Deployment
 
 This app is deployed on **Vercel**. Push to `main` to auto-deploy.
-
-Set `GEMINI_API_KEY` in **Vercel → Project → Settings → Environment Variables**.
 
 ## Tech Stack
 
