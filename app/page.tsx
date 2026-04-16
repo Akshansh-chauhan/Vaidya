@@ -113,9 +113,14 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  // Catch Supabase authentication fallback loops and gracefully redirect to success page
+  // Catch Supabase authentication fallback loops (both ?code= and #access_token=) and gracefully redirect to success page
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.search.includes("code=")) {
+    if (typeof window === "undefined") return;
+    
+    const hasSearchCode = window.location.search.includes("code=") || window.location.search.includes("token_hash=");
+    const hasHashToken = window.location.hash.includes("access_token=") || window.location.hash.includes("type=signup");
+    
+    if (hasSearchCode || hasHashToken) {
       window.location.href = "/auth-success.html"
     }
   }, [])
