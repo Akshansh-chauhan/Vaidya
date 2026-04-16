@@ -41,6 +41,29 @@ export default function PlansPage() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("posture")
   const [completedExercises, setCompletedExercises] = useState<Set<string>>(new Set())
+  const [isNavVisible, setIsNavVisible] = useState(true)
+
+  useEffect(() => {
+    let lastScrollY = 0
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const isNearTop = currentScrollY < 30
+
+      if (isNearTop) {
+        setIsNavVisible(true)
+      } else if (currentScrollY > lastScrollY + 8) {
+        setIsNavVisible(false)
+      } else if (currentScrollY < lastScrollY - 8) {
+        setIsNavVisible(true)
+      }
+
+      lastScrollY = currentScrollY
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -125,27 +148,37 @@ export default function PlansPage() {
   return (
     <div className="min-h-screen bg-[#fafafa]">
       {/* Nav */}
-      <div className="fixed top-5 left-0 right-0 z-50 flex justify-center px-4 anim-fade-up">
-        <nav className="nav-float rounded-full px-3 py-2 flex items-center justify-between w-full max-w-5xl">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild className="text-zinc-500 hover:text-zinc-900">
-              <Link href="/">
-                <ArrowLeft className="w-4 h-4 mr-1.5" />
-                {t.common.backHome}
-              </Link>
-            </Button>
-            <div className="w-px h-5 bg-zinc-200" />
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-zinc-900 rounded-md flex items-center justify-center">
-                <Activity className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="text-[15px] font-bold text-zinc-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Vaidya</span>
+      <div className="fixed top-5 left-0 right-0 z-50 flex justify-between items-start px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto anim-fade-up pointer-events-none">
+        
+        {/* Left Side: Tight Pill mimicking Scan Page */}
+        <nav
+          className={`pointer-events-auto nav-glass rounded-full px-3 py-2 flex items-center gap-3 transition-all duration-300 ${
+            isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0"
+          }`}
+        >
+          <Button variant="ghost" size="sm" asChild className="text-zinc-600 hover:text-zinc-900 hover:bg-white/40">
+            <Link href="/">
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
+              {t.common.backHome}
             </Link>
-          </div>
-          <Button size="sm" asChild>
+          </Button>
+          <div className="w-px h-5 bg-zinc-200/60" />
+          <Link href="/" className="flex items-center gap-2 pr-2">
+            <div className="w-6 h-6 bg-zinc-900 rounded-md flex items-center justify-center">
+              <Activity className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-[15px] font-bold text-zinc-900 tracking-tight" style={{ fontFamily: 'var(--font-outfit)' }}>Vaidya</span>
+          </Link>
+        </nav>
+
+        {/* Right Side: New Scan Button */}
+        <div className={`pointer-events-auto pt-1.5 transition-all duration-300 ${
+            isNavVisible ? "translate-y-0 opacity-100" : "-translate-y-5 opacity-0"
+          }`}>
+          <Button size="sm" asChild className="shadow-[0_4px_14px_rgba(0,0,0,0.1)]">
             <Link href="/scan">{t.common.newScan}</Link>
           </Button>
-        </nav>
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-20">
