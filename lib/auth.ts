@@ -31,7 +31,9 @@ export async function getAuthUserId(request: NextRequest): Promise<string | null
     return null
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { detectSessionInUrl: false }
+  })
   const { data: { user }, error } = await supabase.auth.getUser(token)
 
   if (error || !user) {

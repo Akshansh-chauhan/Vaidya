@@ -179,19 +179,19 @@ export default function HomePage() {
                   }`}
               >
                 <div className="hidden md:flex items-center">
-                  <Link href="/scan" className="text-white/90 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/20 text-[14px] font-medium">
+                  <Link href="/scan" className={`transition-colors px-3 py-1.5 rounded-full text-[14px] font-medium ${useDarkLogoText ? 'text-zinc-700 hover:text-zinc-900 hover:bg-black/5' : 'text-white/80 hover:text-white hover:bg-white/20'}`}>
                     {t.nav.healthScan}
                   </Link>
-                  <Link href="/reports" className="text-white/90 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/20 text-[14px] font-medium">
+                  <Link href="/reports" className={`transition-colors px-3 py-1.5 rounded-full text-[14px] font-medium ${useDarkLogoText ? 'text-zinc-700 hover:text-zinc-900 hover:bg-black/5' : 'text-white/80 hover:text-white hover:bg-white/20'}`}>
                     {t.nav.reports}
                   </Link>
-                  <Link href="/plans" className="text-white/90 hover:text-white transition-colors px-3 py-1.5 rounded-full hover:bg-white/20 text-[14px] font-medium">
+                  <Link href="/plans" className={`transition-colors px-3 py-1.5 rounded-full text-[14px] font-medium ${useDarkLogoText ? 'text-zinc-700 hover:text-zinc-900 hover:bg-black/5' : 'text-white/80 hover:text-white hover:bg-white/20'}`}>
                     {t.nav.plans}
                   </Link>
                 </div>
 
                 <div className="flex items-center gap-1 md:pl-1">
-                  <LanguagePicker lang={lang} onSwitch={switchLanguage} />
+                  <LanguagePicker lang={lang} onSwitch={switchLanguage} darkText={useDarkLogoText} />
                   {user ? (
                     <Button onClick={() => signOut()} size="sm" className="ml-1">
                       Sign Out

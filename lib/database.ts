@@ -9,6 +9,7 @@ function getSupabase(accessToken: string): SupabaseClient {
   }
 
   return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: { detectSessionInUrl: false },
     global: {
       headers: {
         Authorization: `Bearer ${accessToken}`,

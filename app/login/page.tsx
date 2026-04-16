@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Activity, Mail, Lock, Loader2, ArrowRight, Heart, TrendingUp } from "lucide-react"
+import { Activity, Mail, Lock, Loader2, ArrowRight, Heart, TrendingUp, Eye, EyeOff } from "lucide-react"
 import { getSupabaseClient } from "@/lib/supabase"
 
 export default function LoginPage() {
@@ -15,6 +15,43 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [pendingUser, setPendingUser] = useState<{ id: string; email: string; password: string } | null>(null)
+
+  // Real-time Polling for Email Verification
+  useEffect(() => {
+    if (!pendingUser) return;
+    
+    const checkVerification = async () => {
+      const supabase = getSupabaseClient()
+      try {
+        const { data: isVerified, error } = await supabase.rpc('check_user_verified', { p_user_id: pendingUser.id })
+        
+        if (isVerified === true) {
+          // Success! Stop polling and silently start genuine login session
+          clearInterval(intervalId)
+          setSuccess("Email verified! Logging you in seamlessly...")
+          
+          const { error: signInError } = await supabase.auth.signInWithPassword({ 
+            email: pendingUser.email, 
+            password: pendingUser.password 
+          })
+          
+          if (!signInError) {
+             setPendingUser(null)
+             router.push("/")
+          } else {
+             setError(signInError.message)
+          }
+        }
+      } catch (err) {
+        console.error("Polling error:", err)
+      }
+    }
+
+    const intervalId = setInterval(checkVerification, 3000)
+    return () => clearInterval(intervalId)
+  }, [pendingUser, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,16 +63,22 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ 
+        const { data, error } = await supabase.auth.signUp({ 
           email, 
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/scan`
+            emailRedirectTo: `${window.location.origin}/?flow=signup`
           }
         })
         if (error) throw error
-        setSuccess("Check your email to confirm your account, then log in!")
-        setIsSignUp(false)
+        
+        // Save the user data to state to activate the polling hook
+        if (data.user?.id) {
+           setPendingUser({ id: data.user.id, email, password })
+        }
+        
+        setSuccess("Check your email to confirm your account... waiting for confirmation. (Do not close this tab)")
+        // We purposefully DO NOT set isSignUp(false) so the form stays open while polling
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
@@ -151,15 +194,22 @@ export default function LoginPage() {
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-zinc-500 md:text-zinc-400 w-4 h-4" />
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Min 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-white/75 md:bg-zinc-50 border-zinc-300 md:border-zinc-200 text-zinc-900 placeholder:text-zinc-500 md:placeholder:text-zinc-400 rounded-xl h-12 focus:border-zinc-400 focus:ring-zinc-200 transition-all"
+                    className="pl-10 pr-10 bg-white/75 md:bg-zinc-50 border-zinc-300 md:border-zinc-200 text-zinc-900 placeholder:text-zinc-500 md:placeholder:text-zinc-400 rounded-xl h-12 focus:border-zinc-400 focus:ring-zinc-200 transition-all"
                     required
                     minLength={6}
                     disabled={loading}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-zinc-500 md:text-zinc-400 hover:text-zinc-700 transition-colors cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                  </button>
                 </div>
               </div>
 
