@@ -27,15 +27,15 @@
     h1 { font-family: 'Outfit', sans-serif; }
   </style>
 </head>
-<body class="bg-[#fafafa] text-zinc-900 selection:bg-emerald-500/20 px-4 overflow-hidden">
-  <div class="min-h-screen flex items-center justify-center relative">
+<body class="bg-[#fafafa] text-zinc-900 selection:bg-emerald-500/20 overflow-hidden">
+  <div class="min-h-[100dvh] flex flex-col items-center justify-center relative p-4 sm:p-0">
     
     <!-- Elegant Pastel Blobs (Mix-blend multiply on white makes them look incredibly premium and soft) -->
-    <div class="absolute top-[-15%] right-[-10%] w-[500px] h-[500px] bg-violet-400/20 blur-[100px] rounded-full pointer-events-none mix-blend-multiply"></div>
-    <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-400/20 blur-[100px] rounded-full pointer-events-none mix-blend-multiply"></div>
+    <div class="absolute top-[-10%] right-[-10%] w-[80vw] sm:w-[500px] h-[80vw] sm:h-[500px] bg-violet-400/20 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none mix-blend-multiply"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[80vw] sm:w-[500px] h-[80vw] sm:h-[500px] bg-emerald-400/20 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none mix-blend-multiply"></div>
 
     <!-- Frosted Glass Card to give depth -->
-    <div class="w-full max-w-[420px] bg-white/70 backdrop-blur-2xl border border-white shadow-[0_24px_50px_rgba(0,0,0,0.06),_0_0_0_1px_rgba(255,255,255,0.6)_inset] rounded-[32px] p-8 sm:p-10 text-center relative z-10 transition-all duration-700 opacity-0 translate-y-4" id="card">
+    <div class="w-full max-w-[calc(100vw-32px)] sm:max-w-[420px] bg-white/70 backdrop-blur-2xl border border-white shadow-[0_24px_50px_rgba(0,0,0,0.06),_0_0_0_1px_rgba(255,255,255,0.6)_inset] rounded-[28px] sm:rounded-[32px] p-6 sm:p-10 text-center relative z-10 transition-all duration-700 opacity-0 translate-y-4" id="card">
       
       <!-- High-Contrast Popping Icon -->
       <div class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_8px_20px_rgba(16,185,129,0.3)]">
