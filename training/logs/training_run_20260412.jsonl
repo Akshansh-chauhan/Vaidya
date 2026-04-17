@@ -1,0 +1,5 @@
+{"step": 11600, "reward_mean": 0.801, "reward_std": 0.138, "policy_loss": -0.0287, "value_loss": 0.0214, "kl": 0.039, "entropy": 2.389, "timestamp": "2026-04-12T09:14:22Z"}
+{"step": 11800, "reward_mean": 0.818, "reward_std": 0.131, "policy_loss": -0.0298, "value_loss": 0.0201, "kl": 0.042, "entropy": 2.371, "timestamp": "2026-04-12T11:02:47Z"}
+{"step": 12000, "reward_mean": 0.829, "reward_std": 0.127, "policy_loss": -0.0304, "value_loss": 0.0196, "kl": 0.040, "entropy": 2.358, "timestamp": "2026-04-12T13:18:05Z"}
+{"step": 12200, "reward_mean": 0.841, "reward_std": 0.125, "policy_loss": -0.0309, "value_loss": 0.0192, "kl": 0.041, "entropy": 2.349, "timestamp": "2026-04-12T15:31:44Z"}
+{"step": 12400, "reward_mean": 0.847, "reward_std": 0.124, "policy_loss": -0.0312, "value_loss": 0.0189, "kl": 0.041, "entropy": 2.341, "timestamp": "2026-04-12T17:45:30Z"}

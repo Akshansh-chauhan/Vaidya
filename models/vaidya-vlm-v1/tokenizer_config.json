@@ -1,0 +1,21 @@
+{
+  "model_max_length": 8192,
+  "tokenizer_class": "LlamaTokenizerFast",
+  "bos_token": "<|begin_of_text|>",
+  "eos_token": "<|end_of_text|>",
+  "pad_token": "<|finetune_right_pad_id|>",
+  "unk_token": null,
+  "image_token": "<|image|>",
+  "image_token_id": 128256,
+  "padding_side": "right",
+  "add_bos_token": true,
+  "add_eos_token": false,
+  "clean_up_tokenization_spaces": false,
+  "legacy": false,
+  "sp_model_kwargs": {},
+  "special_tokens_map": {
+    "medical_start": "<|med_analysis|>",
+    "medical_end": "<|/med_analysis|>",
+    "disclaimer_token": "<|medical_disclaimer|>"
+  }
+}

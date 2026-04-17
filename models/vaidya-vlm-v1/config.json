@@ -1,0 +1,50 @@
+{
+  "model_type": "vaidya-vlm",
+  "version": "1.0.4",
+  "architecture": "vision-language-transformer",
+  "base_model": "llama-3.2-90b-vision",
+  "fine_tuned": true,
+  "fine_tune_method": "PPO-RLHF",
+  "domain": "medical-visual-qa",
+  "specializations": ["posture", "dermatology", "ophthalmology", "mental-health"],
+  "context_length": 8192,
+  "image_resolution": 1024,
+  "vocab_size": 128256,
+  "hidden_size": 8192,
+  "num_hidden_layers": 80,
+  "num_attention_heads": 64,
+  "intermediate_size": 28672,
+  "vision_encoder": {
+    "type": "clip-vit-large",
+    "patch_size": 14,
+    "image_size": 1024,
+    "hidden_size": 1280
+  },
+  "quantization": {
+    "enabled": true,
+    "method": "GPTQ",
+    "bits": 4,
+    "group_size": 128
+  },
+  "training": {
+    "rl_algorithm": "PPO",
+    "reward_model": "vaidya-reward-v1",
+    "teacher_model": "meta/llama-3.2-90b-vision-instruct",
+    "total_rl_steps": 12400,
+    "last_checkpoint_step": 12400,
+    "kl_coeff": 0.05,
+    "clip_ratio": 0.2,
+    "learning_rate": 1e-6
+  },
+  "languages": ["en", "hi", "zh", "es", "fr", "de", "ja", "ar", "it", "pt"],
+  "inference": {
+    "device": "cuda",
+    "dtype": "float16",
+    "max_new_tokens": 2048,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "repetition_penalty": 1.1
+  },
+  "created_at": "2025-11-03T08:22:14Z",
+  "last_updated": "2026-04-12T17:45:30Z"
+}
