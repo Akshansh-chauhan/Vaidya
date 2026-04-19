@@ -37,6 +37,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preload" as="image" href="/hero-bg.webp" type="image/webp" />
+      </head>
       <body className={`font-sans ${inter.variable} ${outfit.variable} antialiased`}>
         <AuthProvider>
           <Suspense fallback={

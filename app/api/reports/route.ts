@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
       condition: record.analysis?.condition || `${record.category.charAt(0).toUpperCase() + record.category.slice(1)} Analysis`,
       confidence: record.analysis?.confidence || "N/A",
       severity: record.analysis?.severity || "low",
+      urgency_reason: record.analysis?.urgency_reason || null,
       date: record.timestamp,
       summary: record.analysis?.aiResponse
         ? record.analysis.aiResponse.substring(0, 150) + (record.analysis.aiResponse.length > 150 ? "..." : "")

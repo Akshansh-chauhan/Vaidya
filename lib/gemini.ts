@@ -134,7 +134,7 @@ export async function analyzeWithGemini(prompt: string, category: string, langua
           content: enhancedPrompt
         }
       ],
-      temperature: 1,
+      temperature: 0.8,
       top_p: 0.95,
       max_tokens: 1024,
     }
@@ -186,6 +186,7 @@ export async function analyzeWithGemini(prompt: string, category: string, langua
   }
 }
 
+
 export async function analyzeWithGeminiChat(
   message: string,
   category: string,
@@ -233,7 +234,7 @@ export async function analyzeWithGeminiChat(
         body: JSON.stringify({
           model: "meta/llama-3.2-90b-vision-instruct",
           messages: messages,
-          temperature: 1,
+          temperature: 0.8,
           top_p: 0.95,
           max_tokens: 1024,
         }),

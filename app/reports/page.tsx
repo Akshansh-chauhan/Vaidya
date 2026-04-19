@@ -153,157 +153,312 @@ export default function ReportsPage() {
     return matchesSearch && matchesCategory && matchesSeverity
   })
 
-  const handleDownloadReport = (report: HealthReport) => {
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4"
-    })
+  const handleDownloadReport = async (report: HealthReport) => {
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" })
+    const W = doc.internal.pageSize.getWidth()
+    const H = doc.internal.pageSize.getHeight()
+    const ml = 22   // margin left
+    const mr = 22   // margin right
+    const cw = W - ml - mr // content width
+    const reportDate = new Date(report.date)
+    const reportId = `VHR-${reportDate.getFullYear()}${String(reportDate.getMonth()+1).padStart(2,"0")}${String(reportDate.getDate()).padStart(2,"0")}-${report.id.slice(-6).toUpperCase()}`
 
-    const pageWidth = doc.internal.pageSize.getWidth()
-    const pageHeight = doc.internal.pageSize.getHeight()
-    const margin = 20
+    // Load logo
+    let logoBase64: string | null = null
+    try {
+      const res = await fetch("/vaidya-logo.png")
+      const blob = await res.blob()
+      logoBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+    } catch { /* logo optional */ }
 
-    // Vaidya Watermark
-    doc.setTextColor(245, 245, 245)
-    doc.setFontSize(80)
-    doc.text("VAIDYA AI", pageWidth / 2, pageHeight / 2, { angle: 45, align: 'center' })
+    // ── helpers ──────────────────────────────────────────────────────────────
+    const addPageIfNeeded = (need: number, cur: number) => {
+      if (cur + need > H - 28) { doc.addPage(); applyWatermark(); return 32 }
+      return cur
+    }
 
-    // Header strip
-    doc.setFillColor(24, 24, 27) // zinc-900
-    doc.rect(0, 0, pageWidth, 40, "F")
+    const sectionHeader = (label: string, y: number): number => {
+      doc.setFillColor(245, 245, 246)
+      doc.rect(ml, y, cw, 8, "F")
+      doc.setDrawColor(220, 220, 222)
+      doc.rect(ml, y, cw, 8, "S")
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(8)
+      doc.setTextColor(80, 80, 90)
+      doc.text(label, ml + 4, y + 5.3)
+      return y + 12
+    }
 
+    const divider = (y: number) => {
+      doc.setDrawColor(230, 230, 232)
+      doc.setLineWidth(0.3)
+      doc.line(ml, y, ml + cw, y)
+      return y + 6
+    }
+
+    const severityColors: Record<string, [number,number,number]> = {
+      high:   [220, 38, 38],
+      medium: [217, 119, 6],
+      low:    [16, 185, 129],
+    }
+    const [sr, sg, sb] = severityColors[report.severity] ?? [100, 100, 100]
+
+    const applyWatermark = () => {
+      doc.saveGraphicsState()
+      doc.setTextColor(240, 240, 242)
+      doc.setFontSize(62)
+      doc.setFont("helvetica", "bold")
+      doc.text("VAIDYA", W / 2, H / 2 + 10, { angle: 45, align: "center" })
+      doc.restoreGraphicsState()
+    }
+
+    // ── Page 1: watermark ────────────────────────────────────────────────────
+    applyWatermark()
+
+    // ── HEADER ───────────────────────────────────────────────────────────────
+    // Dark bar
+    doc.setFillColor(18, 18, 20)
+    doc.rect(0, 0, W, 44, "F")
+
+    // Logo
+    if (logoBase64) {
+      doc.addImage(logoBase64, "PNG", ml, 11, 16, 16)
+    } else {
+      doc.setFillColor(255, 255, 255)
+      doc.roundedRect(ml, 11, 16, 16, 2, 2, "F")
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(11)
+      doc.setTextColor(18, 18, 20)
+      doc.text("V", ml + 5.5, 22)
+    }
+
+    // Brand name
     doc.setTextColor(255, 255, 255)
     doc.setFont("helvetica", "bold")
-    doc.setFontSize(28)
-    doc.text("VAIDYA", margin, 26)
+    doc.setFontSize(20)
+    doc.text("VAIDYA", ml + 20, 21)
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(8.5)
+    doc.setTextColor(180, 180, 185)
+    doc.text("AI Health Companion", ml + 20, 28)
+
+    // Right side — report type + meta
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(13)
+    doc.setTextColor(255, 255, 255)
+    doc.text("CLINICAL ANALYSIS REPORT", W - mr, 18, { align: "right" })
 
     doc.setFont("helvetica", "normal")
-    doc.setFontSize(11)
-    doc.text("AI Health Companion", margin, 33)
+    doc.setFontSize(8)
+    doc.setTextColor(160, 160, 168)
+    doc.text(`Report ID: ${reportId}`, W - mr, 25.5, { align: "right" })
+    doc.text(
+      `${reportDate.toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" })}  ${reportDate.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" })}`,
+      W - mr, 32, { align: "right" }
+    )
 
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(16)
-    doc.text("CLINICAL ANALYSIS REPORT", pageWidth - margin, 26, { align: "right" })
+    // Thin accent line under header
+    doc.setDrawColor(sr, sg, sb)
+    doc.setLineWidth(0.8)
+    doc.line(0, 44, W, 44)
+    doc.setLineWidth(0.3)
 
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(10)
-    doc.text(`Date: ${new Date(report.date).toLocaleDateString()}`, pageWidth - margin, 33, { align: "right" })
+    // ── REPORT DETAILS GRID ──────────────────────────────────────────────────
+    let y = 53
+    y = sectionHeader("REPORT DETAILS", y)
 
-    // Report Details Section
-    let y = 50
-    doc.setTextColor(31, 41, 55)
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(14)
-    doc.text("REPORT DETAILS", margin, y)
-    
-    y += 6
-    doc.setDrawColor(200, 200, 200)
-    doc.setFillColor(250, 250, 250)
-    doc.roundedRect(margin, y, pageWidth - (margin * 2), 26, 2, 2, "FD")
+    // 5-cell metadata grid
+    const cells = [
+      { label: "Category",   value: categoryLabelsDefault[report.category] || report.category },
+      { label: "Condition",  value: report.condition },
+      { label: "Confidence", value: report.confidence },
+      { label: "Severity",   value: report.severity.toUpperCase() },
+      { label: "Time",       value: reportDate.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit", second:"2-digit" }) },
+    ]
+    const cellW = cw / cells.length
+    const gridH = 16
+    doc.setDrawColor(220, 220, 222)
+    doc.setFillColor(252, 252, 253)
+    doc.rect(ml, y, cw, gridH, "FD")
+    cells.forEach((cell, i) => {
+      const cx = ml + i * cellW
+      // vertical separator
+      if (i > 0) {
+        doc.setDrawColor(220, 220, 222)
+        doc.line(cx, y, cx, y + gridH)
+      }
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(7)
+      doc.setTextColor(140, 140, 150)
+      doc.text(cell.label.toUpperCase(), cx + cellW / 2, y + 5, { align: "center" })
 
-    y += 9
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(10)
-    doc.text("Category:", margin + 5, y)
-    doc.setFont("helvetica", "normal")
-    doc.text(categoryLabelsDefault[report.category] || "General", margin + 30, y)
-
-    doc.setFont("helvetica", "bold")
-    doc.text("Confidence:", pageWidth / 2, y)
-    doc.setFont("helvetica", "normal")
-    doc.text(report.confidence, pageWidth / 2 + 25, y)
-
-    y += 10
-    doc.setFont("helvetica", "bold")
-    doc.text("Condition:", margin + 5, y)
-    doc.setFont("helvetica", "normal")
-    doc.text(report.condition, margin + 30, y)
-
-    doc.setFont("helvetica", "bold")
-    doc.text("Severity:", pageWidth / 2, y)
-    
-    // Dynamic Severity color for PDF
-    if (report.severity === "high") doc.setTextColor(220, 50, 50)
-    else if (report.severity === "medium") doc.setTextColor(180, 100, 50)
-    else doc.setTextColor(50, 150, 50)
-
-    doc.setFont("helvetica", "bold")
-    doc.text(report.severity.toUpperCase(), pageWidth / 2 + 25, y)
-    doc.setTextColor(31, 41, 55) // Reset color
-
-    y += 24
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(14)
-    doc.text("EXECUTIVE SUMMARY", margin, y)
-    
-    y += 8
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(10)
-    const splitSummary = doc.splitTextToSize(report.description || report.summary || "", pageWidth - (margin * 2))
-    doc.text(splitSummary, margin, y)
-    y += (splitSummary.length * 5) + 6
-
-    // Recommendations
-    if (y > pageHeight - 60) { doc.addPage(); y = 30 }
-    doc.setFont("helvetica", "bold")
-    doc.setFontSize(14)
-    doc.text("KEY RECOMMENDATIONS", margin, y)
-    
-    y += 8
-    doc.setFont("helvetica", "normal")
-    doc.setFontSize(10)
-    report.recommendations.forEach((rec, idx) => {
-      if (y > pageHeight - 20) { doc.addPage(); y = 30 }
-      const splitRec = doc.splitTextToSize(`•  ${rec}`, pageWidth - (margin * 2) - 5)
-      doc.text(splitRec, margin + 5, y)
-      y += (splitRec.length * 5) + 3
-    })
-
-    // Consultation History
-    if (report.chatHistory && report.chatHistory.length > 0) {
-      y += 10
-      if (y > pageHeight - 60) { doc.addPage(); y = 30 }
       doc.setFont("helvetica", "bold")
-      doc.setFontSize(14)
-      doc.text("CONSULTATION TRANSCRIPT", margin, y)
-      y += 8
+      doc.setFontSize(9)
+      if (cell.label === "Severity") {
+        doc.setTextColor(sr, sg, sb)
+      } else {
+        doc.setTextColor(28, 28, 32)
+      }
+      const truncated = cell.value.length > 22 ? cell.value.slice(0, 20) + "…" : cell.value
+      doc.text(truncated, cx + cellW / 2, y + 12, { align: "center" })
+      doc.setTextColor(28, 28, 32)
+    })
+    y += gridH + 6
 
-      report.chatHistory.forEach(msg => {
-        if (y > pageHeight - 20) { doc.addPage(); y = 30 }
+    // Urgency reason pill (if available)
+    const urgencyReason = (report as any).urgency_reason
+    if (urgencyReason) {
+      doc.setFillColor(sr + 30 > 255 ? 255 : sr + 230, sg + 230 > 255 ? 255 : sg + 230, sb + 230 > 255 ? 255 : sb + 230)
+      doc.roundedRect(ml, y - 2, cw, 10, 2, 2, "F")
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(7)
+      doc.setTextColor(sr, sg, sb)
+      doc.text("!", ml + 4, y + 4.5)
+      doc.setFont("helvetica", "italic")
+      doc.setFontSize(8.5)
+      doc.text(`  ${urgencyReason}`, ml + 7, y + 4.5)
+      doc.setTextColor(28, 28, 32)
+      y += 14
+    }
+
+    // ── CLINICAL SUMMARY ─────────────────────────────────────────────────────
+    y = addPageIfNeeded(50, y)
+    y = sectionHeader("CLINICAL ASSESSMENT SUMMARY", y)
+
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(9.5)
+    doc.setTextColor(55, 55, 65)
+    const summaryText = doc.splitTextToSize(report.description || report.summary || "No summary available.", cw - 2)
+    summaryText.forEach((line: string) => {
+      y = addPageIfNeeded(7, y)
+      doc.text(line, ml, y)
+      y += 5.5
+    })
+    y += 4
+
+    // ── KEY RECOMMENDATIONS ───────────────────────────────────────────────────
+    y = addPageIfNeeded(20, y)
+    y = divider(y)
+    y = sectionHeader("KEY RECOMMENDATIONS", y)
+
+    report.recommendations.forEach((rec, idx) => {
+      const recLines = doc.splitTextToSize(rec, cw - 13)
+      const blockH = recLines.length * 5.2
+      y = addPageIfNeeded(blockH + 4, y)
+
+      // Text baseline for first line
+      const textY = y + 2.8
+      // Circle center aligned to text cap-height midpoint
+      const circleY = textY - 1.2
+
+      doc.setFillColor(28, 28, 32)
+      doc.circle(ml + 3, circleY, 2.4, "F")
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(6.5)
+      doc.setTextColor(255, 255, 255)
+      doc.text(String(idx + 1), ml + 3, circleY + 0.8, { align: "center" })
+
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(9.5)
+      doc.setTextColor(55, 55, 65)
+      recLines.forEach((line: string, li: number) => {
+        doc.text(line, ml + 9, textY + li * 5.2)
+      })
+
+      y += blockH + 4
+    })
+    y += 2
+
+    // ── CONSULTATION TRANSCRIPT ───────────────────────────────────────────────
+    const transcriptTurns: { isUser: boolean; text: string }[] = []
+    if (report.chatHistory && report.chatHistory.length > 0) {
+      report.chatHistory.forEach((msg: any) => {
+        const isUser = msg.role === "user" || msg.sender === "user"
+        const text = msg.content || msg.text || ""
+        if (text.trim()) transcriptTurns.push({ isUser, text })
+      })
+    }
+    if (report.userMessage?.trim()) transcriptTurns.push({ isUser: true, text: report.userMessage })
+    if (report.description?.trim()) transcriptTurns.push({ isUser: false, text: report.description })
+
+    if (transcriptTurns.length > 0) {
+      y = addPageIfNeeded(20, y)
+      y = divider(y)
+      y = sectionHeader("CONSULTATION TRANSCRIPT", y)
+
+      transcriptTurns.forEach((turn, idx) => {
+        const speaker = turn.isUser ? "PATIENT" : "VAIDYA AI"
+        const msgLines = doc.splitTextToSize(turn.text, cw - 26)
+        const blockH = msgLines.length * 5.2 + 2
+        y = addPageIfNeeded(blockH + 8, y)
+
+        // Speaker label — inline with first text line
         doc.setFont("helvetica", "bold")
-        doc.setFontSize(9)
-        if (msg.role === "user") {
-          doc.setTextColor(100, 100, 100)
-          doc.text("PATIENT:", margin, y)
-        } else {
-          doc.setTextColor(24, 24, 27)
-          doc.text("VAIDYA AI:", margin, y)
-        }
-        
-        y += 5
+        doc.setFontSize(7)
+        doc.setTextColor(turn.isUser ? 28 : 90, turn.isUser ? 28 : 90, turn.isUser ? 32 : 190)
+        doc.text(speaker, ml, y)
+
+        // Message text — indented
         doc.setFont("helvetica", "normal")
-        doc.setTextColor(50, 50, 50)
-        const splitMsg = doc.splitTextToSize(msg.content || "", pageWidth - (margin * 2) - 5)
-        doc.text(splitMsg, margin + 5, y)
-        y += (splitMsg.length * 5) + 5
+        doc.setFontSize(9)
+        doc.setTextColor(55, 55, 65)
+        msgLines.forEach((line: string, li: number) => {
+          doc.text(line, ml + 26, y + li * 5.2)
+        })
+
+        y += blockH + 3
+
+        // Thin rule between turns
+        if (idx < transcriptTurns.length - 1) {
+          doc.setDrawColor(232, 232, 236)
+          doc.setLineWidth(0.2)
+          doc.line(ml + 26, y - 1, ml + cw, y - 1)
+          y += 3
+        }
       })
     }
 
-    // Footer Pagination
+    // ── END OF REPORT marker ─────────────────────────────────────────────────
+    y += 10
+    doc.setDrawColor(220, 220, 222)
+    doc.setLineWidth(0.3)
+    doc.line(ml, y, ml + cw, y)
+    y += 6
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(7.5)
+    doc.setTextColor(180, 180, 188)
+    doc.text("-- End of Report --", W / 2, y, { align: "center" })
+
+    // ── FOOTER (all pages) ────────────────────────────────────────────────────
     const pageCount = (doc as any).internal.getNumberOfPages()
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i)
-      doc.setFont("helvetica", "italic")
-      doc.setFontSize(8)
-      doc.setTextColor(150, 150, 150)
-      doc.setDrawColor(200, 200, 200)
-      doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15)
-      doc.text("Generated by Vaidya AI. This report is for informational purposes only and does not constitute medical advice.", pageWidth / 2, pageHeight - 10, { align: "center" })
-      doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: "right" })
+      // Footer bar
+      doc.setFillColor(245, 245, 246)
+      doc.rect(0, H - 18, W, 18, "F")
+      doc.setDrawColor(220, 220, 222)
+      doc.setLineWidth(0.3)
+      doc.line(0, H - 18, W, H - 18)
+
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(7)
+      doc.setTextColor(160, 160, 170)
+      doc.text("This report is generated by Vaidya AI for informational purposes only and does not constitute medical advice.", ml, H - 12)
+      doc.setFont("helvetica", "bold")
+      doc.setFontSize(7)
+      doc.setTextColor(110, 110, 120)
+      doc.text(`${reportId}`, ml, H - 6)
+      doc.setFont("helvetica", "normal")
+      doc.setTextColor(160, 160, 170)
+      doc.text(`Page ${i} / ${pageCount}`, W - mr, H - 6, { align: "right" })
     }
 
-    doc.save(`Vaidya_Report_${categoryLabelsDefault[report.category]}_${new Date(report.date).toISOString().split('T')[0]}.pdf`)
+    doc.save(`Vaidya_Report_${categoryLabelsDefault[report.category]}_${reportDate.toISOString().split("T")[0]}.pdf`)
   }
 
   const getSeverityStyle = (severity: string) => {
@@ -486,43 +641,63 @@ export default function ReportsPage() {
                                 </span>
                                 <span className="text-sm font-medium text-zinc-500">{t.reports.confidence}: {report.confidence}</span>
                               </div>
-
-                              {report.chatHistory && report.chatHistory.length > 0 ? (
-                                <div className="space-y-3">
-                                  <h4 className="font-semibold text-zinc-900 flex items-center gap-2 text-sm">
-                                    <Activity className="w-4 h-4 text-zinc-500" />
-                                    {t.reports.analysisSummary || "Conversation History"}
-                                  </h4>
-                                  <div className="space-y-3 bg-zinc-50 p-4 rounded-xl border border-zinc-100 max-h-[40vh] overflow-y-auto">
-                                    {report.chatHistory.map((msg, idx) => (
-                                      <div key={idx} className={`p-3 rounded-xl text-sm ${msg.role === "user" ? "bg-white ml-10 border border-zinc-100" : "bg-zinc-100 mr-10"}`}>
-                                        <p className="text-[11px] font-semibold mb-1 text-zinc-400">{msg.role === "user" ? "You" : "Vaidya AI"}</p>
-                                        <p className="text-zinc-700 whitespace-pre-wrap">{msg.content}</p>
-                                      </div>
-                                    ))}
-                                    {report.description && (
-                                      <div className="p-3 rounded-xl bg-zinc-100 mr-10">
-                                        <p className="text-[11px] font-semibold mb-1 text-zinc-400">Vaidya AI</p>
-                                        <p className="text-sm text-zinc-700 whitespace-pre-wrap">{report.description}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ) : (
-                                <>
-                                  {report.userMessage && (
-                                    <div>
-                                      <h4 className="font-semibold mb-2 text-zinc-900 text-sm">Your Message</h4>
-                                      <p className="text-zinc-600 bg-zinc-50 p-3 rounded-xl text-sm border border-zinc-100">{report.userMessage}</p>
-                                    </div>
-                                  )}
-
-                                  <div>
-                                    <h4 className="font-semibold mb-2 text-zinc-900 text-sm">{t.reports.analysisSummary}</h4>
-                                    <p className="text-zinc-600 whitespace-pre-wrap text-sm">{report.description}</p>
-                                  </div>
-                                </>
+                              {(report as any).urgency_reason && (
+                                <p className="text-[12px] text-zinc-400 bg-zinc-50 rounded-xl px-3 py-2 border border-zinc-100 italic">
+                                  {(report as any).urgency_reason}
+                                </p>
                               )}
+
+                              {(() => {
+                                // Build full conversation: chatHistory + userMessage + aiResponse
+                                const turns: { role: "patient" | "ai"; text: string }[] = []
+
+                                // Previous turns from chatHistory (skip bot-only welcome if it's the only entry)
+                                if (report.chatHistory && report.chatHistory.length > 0) {
+                                  report.chatHistory.forEach((msg: any) => {
+                                    const isUser = msg.role === "user" || msg.sender === "user"
+                                    const text = msg.content || msg.text || ""
+                                    if (text.trim()) turns.push({ role: isUser ? "patient" : "ai", text })
+                                  })
+                                }
+
+                                // Current user message
+                                if (report.userMessage?.trim()) {
+                                  turns.push({ role: "patient", text: report.userMessage })
+                                }
+
+                                // Latest AI response
+                                if (report.description?.trim()) {
+                                  turns.push({ role: "ai", text: report.description })
+                                }
+
+                                if (turns.length === 0) return null
+
+                                return (
+                                  <div className="space-y-3">
+                                    <h4 className="font-semibold text-zinc-900 flex items-center gap-2 text-sm">
+                                      <Activity className="w-4 h-4 text-zinc-500" />
+                                      Consultation Transcript
+                                    </h4>
+                                    <div className="space-y-2 bg-zinc-50 p-4 rounded-xl border border-zinc-100 max-h-[40vh] overflow-y-auto">
+                                      {turns.map((turn, idx) => (
+                                        <div key={idx} className={`flex gap-3 ${turn.role === "patient" ? "flex-row-reverse" : ""}`}>
+                                          <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5 ${turn.role === "patient" ? "bg-zinc-900 text-white" : "bg-zinc-200 text-zinc-600"}`}>
+                                            {turn.role === "patient" ? "P" : "AI"}
+                                          </div>
+                                          <div className={`flex-1 max-w-[85%] ${turn.role === "patient" ? "text-right" : ""}`}>
+                                            <p className={`text-[10px] font-semibold mb-1 ${turn.role === "patient" ? "text-zinc-500" : "text-zinc-400"}`}>
+                                              {turn.role === "patient" ? "Patient" : "Vaidya AI"}
+                                            </p>
+                                            <div className={`inline-block px-3 py-2 rounded-xl text-[13px] leading-relaxed text-left ${turn.role === "patient" ? "bg-zinc-900 text-white rounded-tr-sm" : "bg-white border border-zinc-200 text-zinc-700 rounded-tl-sm"}`}>
+                                              {turn.text}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )
+                              })()}
 
                               <div>
                                 <h4 className="font-semibold mb-2 text-zinc-900 text-sm">{t.reports.recommendations}</h4>

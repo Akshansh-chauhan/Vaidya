@@ -291,12 +291,9 @@ export default function HealthChatbot({ scanType, title, description, acceptedFi
         body: formData,
       })
 
-      if (!response.ok) {
-        throw new Error(`Chat failed: ${response.status}`)
-      }
+      if (!response.ok) throw new Error(`Chat failed: ${response.status}`)
 
       const result = await response.json()
-
       addMessage(result.response, "bot", result.type || "text")
     } catch (error) {
       console.error("Chat error:", error)
