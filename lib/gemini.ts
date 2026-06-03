@@ -1,3 +1,16 @@
+/**
+ * AI Inference Module — Cloud VLM Integration
+ *
+ * Historical note: This module was originally named gemini.ts during early prototyping
+ * when Google Gemini was the intended provider. The inference backend was migrated to
+ * NVIDIA NIM API (meta/llama-3.2-90b-vision-instruct) for superior vision capabilities,
+ * but the filename and exported function names were preserved to avoid breaking the
+ * existing import graph across 9+ API route files.
+ *
+ * The local fine-tuned model (Vaidya VLM v1) uses the same OpenAI-compatible API format
+ * and is routed through lib/local-vlm.ts with automatic cloud fallback.
+ */
+
 // Ensure global-fetch is available
 const fetch = global.fetch // Use global fetch available in Next.js
 
@@ -81,7 +94,7 @@ export function getLanguagePrompt(language: string): string {
 
 export async function analyzeWithGemini(prompt: string, category: string, language = "en") {
   try {
-    console.log("[v0] Starting Gemini analysis for category:", category, "in language:", language)
+    console.log("[vaidya] Starting Gemini analysis for category:", category, "in language:", language)
 
     const enhancedPrompt = `
     ${getLanguagePrompt(language)}
@@ -124,7 +137,7 @@ export async function analyzeWithGemini(prompt: string, category: string, langua
     Respond with valid JSON only.
     `
 
-    console.log("[v0] Making request to Nvidia API...")
+    console.log("[vaidya] Making request to Nvidia API...")
 
     const requestBody = {
       model: "meta/llama-3.2-90b-vision-instruct",
@@ -148,40 +161,40 @@ export async function analyzeWithGemini(prompt: string, category: string, langua
       body: JSON.stringify(requestBody),
     })
 
-    console.log("[v0] Nvidia API response status:", response.status)
+    console.log("[vaidya] Nvidia API response status:", response.status)
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error("[v0] Nvidia API error:", response.status, errorText)
+      console.error("[vaidya] Nvidia API error:", response.status, errorText)
       throw new Error(`Nvidia API error: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
-    console.log("[v0] Nvidia API response received")
+    console.log("[vaidya] Nvidia API response received")
 
     let text = data.choices?.[0]?.message?.content || ""
 
     if (!text) {
-      console.error("[v0] No text content in Nvidia response:", data)
+      console.error("[vaidya] No text content in Nvidia response:", data)
       throw new Error("No content received from Nvidia API")
     }
 
     // Sanitize the output
     text = sanitizeGeminiOutput(text)
-    console.log("[v0] Text sanitized, attempting JSON parse...")
+    console.log("[vaidya] Text sanitized, attempting JSON parse...")
 
     // Try to parse as JSON, fallback to enhanced structured response if needed
     try {
       const result = JSON.parse(text)
-      console.log("[v0] Successfully parsed JSON response")
+      console.log("[vaidya] Successfully parsed JSON response")
       return result
     } catch (parseError) {
-      console.log("[v0] JSON parse failed, using fallback response")
+      console.log("[vaidya] JSON parse failed, using fallback response")
       // Enhanced fallback structured response
       return createEnhancedFallbackResponse(category, text)
     }
   } catch (error) {
-    console.error("[v0] Gemini API Error:", error)
+    console.error("[vaidya] Gemini API Error:", error)
     throw new Error(`Failed to analyze with Gemini AI: ${error instanceof Error ? error.message : "Unknown error"}`)
   }
 }
@@ -195,7 +208,7 @@ export async function analyzeWithGeminiChat(
   language = "en",
 ) {
   try {
-    console.log("[v0] Starting Gemini chat analysis for category:", category, "in language:", language)
+    console.log("[vaidya] Starting Gemini chat analysis for category:", category, "in language:", language)
 
     const contextPrompt = getChatContextForCategory(category)
     const languageInstruction = getLanguagePrompt(language)
@@ -245,14 +258,14 @@ export async function analyzeWithGeminiChat(
 
     // Handle 429 Rate Limits by waiting and retrying once
     if (response.status === 429) {
-      console.warn("[v0] Nvidia API Rate Limit Hit (429). Retrying in 8.5 seconds...")
+      console.warn("[vaidya] Nvidia API Rate Limit Hit (429). Retrying in 8.5 seconds...")
       await new Promise(resolve => setTimeout(resolve, 8500))
       response = await makeRequest()
     }
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error("[v0] Nvidia API error:", response.status, errorText)
+      console.error("[vaidya] Nvidia API error:", response.status, errorText)
       throw new Error(`Nvidia API error: ${response.status}`)
     }
 
@@ -268,7 +281,7 @@ export async function analyzeWithGeminiChat(
       type: imageData ? "analysis" : "text",
     }
   } catch (error) {
-    console.error("[v0] Gemini Chat Error:", error)
+    console.error("[vaidya] Gemini Chat Error:", error)
     const errorMessages = {
       en: "I'm having trouble processing your request. Please try again or consult a healthcare professional.",
       es: "Tengo problemas para procesar tu solicitud. Inténtalo de nuevo o consulta a un profesional de la salud.",

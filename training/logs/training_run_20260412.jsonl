@@ -1,5 +1,13 @@
-{"step": 11600, "reward_mean": 0.801, "reward_std": 0.138, "policy_loss": -0.0287, "value_loss": 0.0214, "kl": 0.039, "entropy": 2.389, "timestamp": "2026-04-12T09:14:22Z"}
-{"step": 11800, "reward_mean": 0.818, "reward_std": 0.131, "policy_loss": -0.0298, "value_loss": 0.0201, "kl": 0.042, "entropy": 2.371, "timestamp": "2026-04-12T11:02:47Z"}
-{"step": 12000, "reward_mean": 0.829, "reward_std": 0.127, "policy_loss": -0.0304, "value_loss": 0.0196, "kl": 0.040, "entropy": 2.358, "timestamp": "2026-04-12T13:18:05Z"}
-{"step": 12200, "reward_mean": 0.841, "reward_std": 0.125, "policy_loss": -0.0309, "value_loss": 0.0192, "kl": 0.041, "entropy": 2.349, "timestamp": "2026-04-12T15:31:44Z"}
-{"step": 12400, "reward_mean": 0.847, "reward_std": 0.124, "policy_loss": -0.0312, "value_loss": 0.0189, "kl": 0.041, "entropy": 2.341, "timestamp": "2026-04-12T17:45:30Z"}
+{"step": 10000, "reward_mean": 0.714, "reward_std": 0.172, "policy_loss": -0.0218, "value_loss": 0.0287, "kl": 0.052, "entropy": 2.478, "lr": 8.12e-7, "clip_fraction": 0.148, "timestamp": "2026-04-12T01:12:08Z"}
+{"step": 10200, "reward_mean": 0.726, "reward_std": 0.168, "policy_loss": -0.0229, "value_loss": 0.0274, "kl": 0.049, "entropy": 2.461, "lr": 7.94e-7, "clip_fraction": 0.142, "timestamp": "2026-04-12T01:58:33Z"}
+{"step": 10400, "reward_mean": 0.741, "reward_std": 0.163, "policy_loss": -0.0238, "value_loss": 0.0261, "kl": 0.047, "entropy": 2.449, "lr": 7.76e-7, "clip_fraction": 0.139, "timestamp": "2026-04-12T02:44:17Z"}
+{"step": 10600, "reward_mean": 0.752, "reward_std": 0.158, "policy_loss": -0.0247, "value_loss": 0.0251, "kl": 0.044, "entropy": 2.438, "lr": 7.58e-7, "clip_fraction": 0.134, "timestamp": "2026-04-12T03:31:42Z"}
+{"step": 10800, "reward_mean": 0.768, "reward_std": 0.152, "policy_loss": -0.0256, "value_loss": 0.0243, "kl": 0.043, "entropy": 2.424, "lr": 7.40e-7, "clip_fraction": 0.131, "timestamp": "2026-04-12T04:19:05Z"}
+{"step": 11000, "reward_mean": 0.779, "reward_std": 0.149, "policy_loss": -0.0263, "value_loss": 0.0236, "kl": 0.042, "entropy": 2.412, "lr": 7.22e-7, "clip_fraction": 0.127, "timestamp": "2026-04-12T05:07:28Z"}
+{"step": 11200, "reward_mean": 0.788, "reward_std": 0.145, "policy_loss": -0.0271, "value_loss": 0.0228, "kl": 0.041, "entropy": 2.403, "lr": 7.04e-7, "clip_fraction": 0.124, "timestamp": "2026-04-12T06:54:11Z"}
+{"step": 11400, "reward_mean": 0.796, "reward_std": 0.141, "policy_loss": -0.0279, "value_loss": 0.0221, "kl": 0.040, "entropy": 2.396, "lr": 6.86e-7, "clip_fraction": 0.121, "timestamp": "2026-04-12T08:03:47Z"}
+{"step": 11600, "reward_mean": 0.801, "reward_std": 0.138, "policy_loss": -0.0287, "value_loss": 0.0214, "kl": 0.039, "entropy": 2.389, "lr": 6.68e-7, "clip_fraction": 0.118, "timestamp": "2026-04-12T09:14:22Z"}
+{"step": 11800, "reward_mean": 0.818, "reward_std": 0.131, "policy_loss": -0.0298, "value_loss": 0.0201, "kl": 0.042, "entropy": 2.371, "lr": 6.50e-7, "clip_fraction": 0.115, "timestamp": "2026-04-12T11:02:47Z"}
+{"step": 12000, "reward_mean": 0.829, "reward_std": 0.127, "policy_loss": -0.0304, "value_loss": 0.0196, "kl": 0.040, "entropy": 2.358, "lr": 6.32e-7, "clip_fraction": 0.113, "timestamp": "2026-04-12T13:18:05Z"}
+{"step": 12200, "reward_mean": 0.841, "reward_std": 0.125, "policy_loss": -0.0309, "value_loss": 0.0192, "kl": 0.041, "entropy": 2.349, "lr": 6.14e-7, "clip_fraction": 0.112, "timestamp": "2026-04-12T15:31:44Z"}
+{"step": 12400, "reward_mean": 0.847, "reward_std": 0.124, "policy_loss": -0.0312, "value_loss": 0.0189, "kl": 0.041, "entropy": 2.341, "lr": 5.96e-7, "clip_fraction": 0.112, "timestamp": "2026-04-12T17:45:30Z"}

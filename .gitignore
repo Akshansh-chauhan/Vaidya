@@ -25,3 +25,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# model weights (too large for git — stored on GPU server / HuggingFace Hub)
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+models/*/checkpoints/model-*
+models/*/checkpoints/optimizer.*
+models/*/checkpoints/scheduler.*
+models/*/checkpoints/rng_state.*
+
+# training data
+training/reward_data/
+training/datasets/

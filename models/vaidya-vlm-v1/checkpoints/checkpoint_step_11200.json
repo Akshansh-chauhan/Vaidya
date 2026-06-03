@@ -1,0 +1,41 @@
+{
+  "step": 11200,
+  "epoch": 2.8,
+  "timestamp": "2026-04-12T06:54:11Z",
+  "metrics": {
+    "reward_mean": 0.788,
+    "reward_std": 0.145,
+    "kl_divergence": 0.041,
+    "policy_loss": -0.0271,
+    "value_loss": 0.0228,
+    "entropy": 2.403,
+    "approx_kl": 0.039,
+    "clip_fraction": 0.124,
+    "explained_variance": 0.687
+  },
+  "eval_metrics": {
+    "medical_accuracy": 0.867,
+    "hallucination_rate": 0.035,
+    "safety_score": 0.971,
+    "multilingual_parity": 0.911,
+    "image_grounding_score": 0.849
+  },
+  "category_scores": {
+    "posture": 0.884,
+    "dermatology": 0.859,
+    "ophthalmology": 0.841,
+    "mental_health": 0.876
+  },
+  "files": {
+    "model_weights": "model-00001-of-00008.safetensors",
+    "optimizer_state": "optimizer.pt",
+    "scheduler_state": "scheduler.pt",
+    "rng_state": "rng_state.pth"
+  },
+  "hardware": {
+    "gpus": 4,
+    "gpu_type": "A100-80GB",
+    "total_gpu_memory_gb": 320,
+    "training_duration_hours": 51.2
+  }
+}

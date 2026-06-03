@@ -21,6 +21,12 @@ from data_collector import ExperienceCollector
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
+try:
+    from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+    from peft import PeftModel, get_peft_model, LoraConfig
+except ImportError:
+    logger.warning("transformers/peft not installed — model loading will fail")
+
 
 @dataclass
 class PPOConfig:
@@ -73,6 +79,38 @@ class PPOTrainer:
         logger.info(f"Initializing PPO trainer on {self.device}")
         logger.info(f"Policy model: {config.policy_model_path}")
         logger.info(f"Reward model: {config.reward_model_path}")
+
+        # Load policy model with quantisation for memory efficiency
+        logger.info("Loading base model with 4-bit quantisation...")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.float16,
+            bnb_4bit_use_double_quant=True,
+        )
+        self.policy_model = AutoModelForCausalLM.from_pretrained(
+            config.policy_model_path,
+            quantization_config=bnb_config,
+            device_map="auto",
+            torch_dtype=torch.float16,
+            trust_remote_code=True,
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            config.policy_model_path, trust_remote_code=True
+        )
+
+        # Apply LoRA adapters for parameter-efficient fine-tuning
+        lora_config = LoraConfig(
+            r=16,
+            lora_alpha=32,
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+            lora_dropout=0.05,
+            bias="none",
+            task_type="CAUSAL_LM",
+        )
+        self.policy_model = get_peft_model(self.policy_model, lora_config)
+        self.policy_model.print_trainable_parameters()
+        logger.info("Policy model loaded successfully")
 
         self.reward_model = VaidyaRewardModel.load(config.reward_model_path, device=self.device)
         self.collector = ExperienceCollector(
